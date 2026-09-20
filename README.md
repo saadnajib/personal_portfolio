@@ -8,7 +8,7 @@ Sections are "layers" (Input → Features → Embedding → Training log → Che
 - `styles.css` – design system, animations, responsive layout
 - `script.js` – boot sequence, live portrait viewfinder (Sobel edges / heatmap / patches / depth lens),
   particle field, reticle cursor, 3D skill sphere, training-curve timeline, ⌘K palette, résumé viewer
-- `fonts/` – all four fonts, self-hosted latin woff2 (Inter Tight for the name, Syne, Space Grotesk, JetBrains Mono; SIL OFL)
+- `fonts/` – all four fonts, self-hosted latin woff2 (Archivo for the name, Syne, Space Grotesk, JetBrains Mono; SIL OFL)
 - `saad.webp` + `saad.JPG` – portrait, 960×1280 (WebP served first, JPG fallback; case-sensitive file names!)
 - `Muhammad_Saad_Najib_CV.pdf` – résumé (view + download)
 - `favicon.svg`, `_headers` (security headers for Cloudflare Pages / Netlify)
