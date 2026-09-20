@@ -11,14 +11,11 @@
   <meta property="og:image" content="./saad.JPG">
   <title>Muhammad Saad Najib — Machine Learning & Computer Vision</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="./fonts/instrument-serif-latin-400-normal.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="./fonts/instrument-serif-latin-400-italic.woff2" crossorigin>
-  <link rel="preload" as="image" href="./saad.JPG" fetchpriority="high">
+  <link rel="preload" as="font" type="font/woff2" href="./fonts/inter-tight-latin-wght-normal.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="./fonts/syne-latin-wght-normal.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="./fonts/space-grotesk-latin-wght-normal.woff2" crossorigin>
+  <link rel="preload" as="image" href="./saad.webp" type="image/webp" fetchpriority="high">
   <link rel="stylesheet" href="./styles.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/syne@5/index.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/space-grotesk@5/index.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/jetbrains-mono@5/index.css">
   <script src="./script.js" defer></script>
 </head>
 <body>
@@ -42,6 +39,7 @@
 
   <!-- ░░ AMBIENT ░░ -->
   <canvas id="field" class="field" aria-hidden="true"></canvas>
+  <div class="noise" aria-hidden="true"></div>
   <div class="cursor" id="cursor" aria-hidden="true">
     <i class="cursor-ring"></i><i class="cursor-dot"></i>
     <span class="cursor-label" id="cursor-label"></span>
@@ -107,7 +105,7 @@
       <div class="hero-visual" id="viewfinder" aria-label="Portrait of Muhammad Saad Najib rendered through a live computer-vision viewfinder">
         <div class="vf-frame">
           <canvas id="portrait" class="portrait" aria-hidden="true"></canvas>
-          <img src="./saad.JPG" alt="Muhammad Saad Najib" class="portrait-fallback" id="portrait-src" decoding="async" fetchpriority="high">
+          <picture><source srcset="./saad.webp" type="image/webp"><img src="./saad.JPG" width="960" height="1280" alt="Muhammad Saad Najib" class="portrait-fallback" id="portrait-src" decoding="async" fetchpriority="high"></picture>
           <div class="vf-scan" id="vf-scan" aria-hidden="true"></div>
           <div class="vf-box" id="vf-box" aria-hidden="true">
             <span class="vf-tag">subject · M. S. Najib <b>0.998</b></span>
@@ -117,7 +115,7 @@
             <span class="hud tl">REC <i class="rec"></i> CAM_01</span>
             <span class="hud tr" id="hud-mode">MODE · COLORIZE</span>
             <span class="hud bl" id="hud-readout">σ 0.00 · μ 0.00</span>
-            <span class="hud br">1200 × 1600 · RGB</span>
+            <span class="hud br">960 × 1280 · RGB</span>
           </div>
           <div class="vf-grid" aria-hidden="true"></div>
         </div>
