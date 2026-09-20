@@ -143,7 +143,7 @@
           <p class="eyebrow">LAYER 01 · FEATURE EXTRACTION</p>
           <h2 id="work-title" class="split-heading">Selected <span class="accent">work</span></h2>
         </div>
-        <p class="section-note">Eight activations from the last six years.<br>Hover a card to inspect it. Every visual is generated live — no images.</p>
+        <p class="section-note">Ten activations from the last six years.<br>Hover a card to inspect it. Every visual is generated live — no images.</p>
       </div>
 
       <div class="bento">
@@ -219,10 +219,24 @@
           </div>
         </article>
 
+        <article class="card card-lg tilt reveal" data-label="gan api">
+          <div class="card-art art-gan" aria-hidden="true">
+            <div class="gan-row"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="gan-row r2"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <code class="art-code">POST /colorize · 200 OK · G(z | L) → ab</code>
+          </div>
+          <div class="card-body">
+            <div class="card-meta"><span>04 / GENERATIVE · API</span><span>GAN · TensorFlow · Keras</span></div>
+            <a class="card-title" href="https://github.com/saadnajib/GAN-Image-colorization-API-master" target="_blank" rel="noopener noreferrer"><h3>GAN image-colorization API</h3><i aria-hidden="true">↗</i></a>
+            <p>The published CNN, extended with a conditional GAN generator and served over an API. Separate generators trained for general scenes, coastlines and people, so grayscale input picks the domain expert.</p>
+            <div class="tags"><span>GANs</span><span>Model serving</span><span>Notebooks</span></div>
+          </div>
+        </article>
+
         <article class="card card-sm tilt reveal" data-label="grasp synthesis">
           <div class="card-art art-grasp" aria-hidden="true"><div class="hand"><i></i><i></i><i></i><i></i><i></i></div><code class="art-code">strain-aware ✓</code></div>
           <div class="card-body">
-            <div class="card-meta"><span>04 / RESEARCH</span></div>
+            <div class="card-meta"><span>05 / RESEARCH</span></div>
             <a class="card-title" href="https://github.com/saadnajib/Egocentric-Grasp-Synthesis-using-Contextual-Reasoning-for-Strain-Aware" target="_blank" rel="noopener noreferrer"><h3>Egocentric grasp synthesis</h3><i aria-hidden="true">↗</i></a>
             <p>Contextual reasoning for strain-aware hand–object grasps from a first-person view.</p>
           </div>
@@ -231,7 +245,7 @@
         <article class="card card-sm tilt reveal" data-label="head pose">
           <div class="card-art art-pose" aria-hidden="true"><div class="gyro"><i></i><i></i><i></i></div><code class="art-code">yaw · pitch · roll</code></div>
           <div class="card-body">
-            <div class="card-meta"><span>05 / MOBILE</span></div>
+            <div class="card-meta"><span>06 / MOBILE</span></div>
             <a class="card-title" href="https://github.com/saadnajib/Head-Pose-Android-App" target="_blank" rel="noopener noreferrer"><h3>Head-pose Android app</h3><i aria-hidden="true">↗</i></a>
             <p>On-device head-pose estimation with threshold-triggered capture.</p>
           </div>
@@ -240,7 +254,7 @@
         <article class="card card-sm tilt reveal" data-label="opencv">
           <div class="card-art art-pixels" aria-hidden="true"><div class="pixels" id="pixels"></div><code class="art-code">see · detect · understand</code></div>
           <div class="card-body">
-            <div class="card-meta"><span>06 / EXPERIMENTS</span></div>
+            <div class="card-meta"><span>07 / EXPERIMENTS</span></div>
             <a class="card-title" href="https://github.com/saadnajib/OpenCv" target="_blank" rel="noopener noreferrer"><h3>OpenCV &amp; image processing</h3><i aria-hidden="true">↗</i></a>
             <p>Filters, Haar cascades, LBPH recognition and feature extraction — the fundamentals, by hand.</p>
           </div>
@@ -249,18 +263,47 @@
         <article class="card card-sm tilt reveal" data-label="cifar-10">
           <div class="card-art art-classes" aria-hidden="true"><div class="bars"><i style="--h:.92"></i><i style="--h:.31"></i><i style="--h:.58"></i><i style="--h:.2"></i><i style="--h:.75"></i><i style="--h:.44"></i><i style="--h:.12"></i><i style="--h:.66"></i><i style="--h:.38"></i><i style="--h:.5"></i></div><code class="art-code">softmax · 10 classes</code></div>
           <div class="card-body">
-            <div class="card-meta"><span>07 / CLASSIFICATION</span></div>
+            <div class="card-meta"><span>08 / CLASSIFICATION</span></div>
             <a class="card-title" href="https://github.com/saadnajib/Artificial-intelligence" target="_blank" rel="noopener noreferrer"><h3>CIFAR-10 classifier</h3><i aria-hidden="true">↗</i></a>
             <p>A convolutional classifier across ten object classes — my first end-to-end training loop.</p>
           </div>
         </article>
 
-        <article class="card card-sm tilt reveal" data-label="react">
-          <div class="card-art art-ui" aria-hidden="true"><div class="ui"><i></i><i></i><i></i><i></i></div><code class="art-code">&lt;Registry /&gt;</code></div>
+        <article class="card card-half tilt reveal" data-label="trading bot">
+          <div class="card-art art-trade" aria-hidden="true">
+            <svg viewBox="0 0 400 200" preserveAspectRatio="none">
+              <g class="grid" stroke="rgba(255,255,255,.06)"><path d="M0 50h400M0 100h400M0 150h400"/></g>
+              <g class="candles" stroke-width="1.2">
+                <g stroke="#5ef2e0" fill="#5ef2e0"><path d="M30 140v-40M60 120v-38M110 130v-46M170 110v-40M230 95v-42M260 84v-36M330 70v-44M360 62v-40"/><rect x="24" y="118" width="12" height="16"/><rect x="54" y="96" width="12" height="18"/><rect x="104" y="100" width="12" height="20"/><rect x="164" y="86" width="12" height="16"/><rect x="224" y="68" width="12" height="20"/><rect x="254" y="60" width="12" height="16"/><rect x="324" y="40" width="12" height="20"/><rect x="354" y="34" width="12" height="18"/></g>
+                <g stroke="#ff5c7a" fill="#ff5c7a"><path d="M85 100v46M140 100v44M200 86v40M290 70v40M300 72v36"/><rect x="79" y="112" width="12" height="18"/><rect x="134" y="110" width="12" height="16"/><rect x="194" y="96" width="12" height="16"/><rect x="284" y="80" width="12" height="16"/></g>
+              </g>
+              <path class="ema" d="M0 150C60 145 90 130 130 120S200 100 240 88 320 60 400 44" fill="none" stroke="#ffb454" stroke-width="1.6"/>
+              <path class="tp" d="M0 34h400" stroke="rgba(94,242,224,.5)" stroke-dasharray="4 6"/><path class="sl" d="M0 166h400" stroke="rgba(255,92,122,.5)" stroke-dasharray="4 6"/>
+            </svg>
+            <code class="art-code">EMA20 · RSI14 · vol ×1.5 → TP +4% / SL −2%</code>
+          </div>
           <div class="card-body">
-            <div class="card-meta"><span>08 / WEB</span></div>
-            <a class="card-title" href="https://github.com/saadnajib/Registry-App-Reactjs" target="_blank" rel="noopener noreferrer"><h3>Registry web app</h3><i aria-hidden="true">↗</i></a>
-            <p>React, plus a WordPress theme written from scratch in PHP and an ASP.NET project — the full-stack side.</p>
+            <div class="card-meta"><span>09 / SYSTEMS</span><span>Python · ccxt · pandas</span></div>
+            <a class="card-title" href="https://github.com/saadnajib/trading_bot_v2" target="_blank" rel="noopener noreferrer"><h3>Momentum-breakout trading bot</h3><i aria-hidden="true">↗</i></a>
+            <p>Testnet-first crypto bot on 15-minute candles: EMA/RSI/volume entries, hard risk rails (2% risk cap, 20% notional cap, daily kill switch), exchange-side stops with software fallback, retry layer and fee-aware PnL journaling.</p>
+            <div class="tags"><span>Risk engine</span><span>Live systems</span><span>Testnet</span></div>
+          </div>
+        </article>
+
+        <article class="card card-half tilt reveal" data-label="annotation tool">
+          <div class="card-art art-annot" aria-hidden="true">
+            <div class="annot-frame">
+              <i class="bbox b1"><span>person 0.94</span></i>
+              <i class="bbox b2"><span>cup 0.88</span></i>
+              <i class="bbox b3"><span>laptop 0.91</span></i>
+            </div>
+            <code class="art-code">upload → frames → annotate → split → train</code>
+          </div>
+          <div class="card-body">
+            <div class="card-meta"><span>10 / TOOLING · MINDGARAGE</span><span>Flask · OpenCV · MMDetection</span></div>
+            <a class="card-title" href="https://github.com/saadnajib/Mindgarage_Roboflow_app" target="_blank" rel="noopener noreferrer"><h3>In-house Roboflow-style annotation app</h3><i aria-hidden="true">↗</i></a>
+            <p>A self-hosted dataset tool for the MindGarage lab: upload images or videos, extract frames, draw boxes in the browser, split train/test/validation and launch MMDetection training, all from one Flask app.</p>
+            <div class="tags"><span>Data tooling</span><span>Detection</span><span>Web app</span></div>
           </div>
         </article>
       </div>
