@@ -30,23 +30,24 @@
   /* ── Boot sequence ──────────────────────────────────────────── */
   const boot = $('#boot');
   function runBoot() {
-    if (state.paused || sessionStorage.getItem('booted')) { html.classList.add('no-boot', 'ready'); startPortrait(); return; }
+    let booted = false; try { booted = !!sessionStorage.getItem('booted'); } catch (e) {}
+    if (state.paused || booted) { html.classList.add('no-boot', 'ready'); startPortrait(); return; }
     document.body.classList.add('locked');
     const items = $$('#boot-log li'), bar = $('#boot-bar'), pct = $('#boot-pct');
     let p = 0;
     const tick = setInterval(() => {
-      p = Math.min(100, p + Math.random() * 14 + 4);
+      p = Math.min(100, p + Math.random() * 16 + 12);
       bar.style.width = p + '%'; pct.textContent = Math.round(p) + '%';
       items.forEach((li, i) => { if (p >= (i + 1) * 18) li.classList.add('on'); });
       if (p >= 100) {
         clearInterval(tick);
         setTimeout(() => {
           boot.classList.add('done'); document.body.classList.remove('locked');
-          sessionStorage.setItem('booted', '1');
-          setTimeout(() => { html.classList.add('ready'); startPortrait(); }, 300);
-        }, 420);
+          try { sessionStorage.setItem('booted', '1'); } catch (e) {}
+          setTimeout(() => { html.classList.add('ready'); startPortrait(); }, 120);
+        }, 160);
       }
-    }, 110);
+    }, 70);
   }
 
   /* ── Text splitting ─────────────────────────────────────────── */
@@ -238,43 +239,53 @@
 
   /* ── Ambient particle field ─────────────────────────────────── */
   const field = $('#field'), fctx = field.getContext('2d');
-  let fw = 0, fh = 0, particles = [], fieldFrame = 0, fieldTime = 0;
-  const colors = [[94, 242, 224], [124, 92, 255], [255, 92, 122], [255, 180, 84]];
+  const lightField = matchMedia('(max-width: 820px), (pointer: coarse)');
+  let fw = 0, fh = 0, particles = [], fieldFrame = 0, fieldTime = 0, lastField = 0;
+  const colors = ['94,242,224', '124,92,255', '255,92,122', '255,180,84'];
   function resizeField() {
-    const dpr = Math.min(devicePixelRatio || 1, 1.5);
+    const dpr = Math.min(devicePixelRatio || 1, 1.25);
+    const sameWidth = innerWidth === fw && Math.abs(innerHeight - fh) < 200;
     fw = innerWidth; fh = innerHeight; field.width = fw * dpr; field.height = fh * dpr; fctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const count = Math.round(clamp(fw * fh / 14000, 40, 130));
+    if (sameWidth && particles.length) return; // mobile address-bar resizes: keep the particles, just resize the canvas
+    const count = lightField.matches ? 0 : Math.round(clamp(fw * fh / 22000, 30, 70));
     particles = Array.from({ length: count }, () => ({ x: Math.random() * fw, y: Math.random() * fh, vx: 0, vy: 0, s: Math.random() * 1.4 + .4, c: Math.floor(Math.random() * 4) }));
   }
   const noise = (x, y, t) => Math.sin(x * .0021 + t) * Math.cos(y * .0017 - t * .7) + Math.sin((x + y) * .0009 + t * .5);
   function fieldLoop(t) {
     fieldFrame = 0;
-    if (state.paused || document.hidden) return;
+    if (state.paused || document.hidden || !particles.length) return;
+    fieldFrame = requestAnimationFrame(fieldLoop);
+    if (t - lastField < 32) return; // ~30 fps is plenty for an ambient layer
+    lastField = t;
     fieldTime = t * .00012;
     fctx.clearRect(0, 0, fw, fh);
-    const mx = state.mouse.x, my = state.mouse.y, shift = state.progress * 3;
+    const mx = state.mouse.x, my = state.mouse.y, shift = Math.floor(state.progress * 3);
     for (const p of particles) {
       const a = noise(p.x, p.y, fieldTime) * Math.PI;
-      p.vx = lerp(p.vx, Math.cos(a) * .45, .05); p.vy = lerp(p.vy, Math.sin(a) * .45, .05);
+      p.vx = lerp(p.vx, Math.cos(a) * .55, .05); p.vy = lerp(p.vy, Math.sin(a) * .55, .05);
       const dx = p.x - mx, dy = p.y - my, d2 = dx * dx + dy * dy;
       if (d2 < 22000) { const f = (1 - d2 / 22000) * 1.6; p.vx += dx / Math.sqrt(d2 + 1) * f; p.vy += dy / Math.sqrt(d2 + 1) * f; }
       p.x += p.vx; p.y += p.vy;
       if (p.x < -20) p.x = fw + 20; if (p.x > fw + 20) p.x = -20; if (p.y < -20) p.y = fh + 20; if (p.y > fh + 20) p.y = -20;
     }
-    fctx.lineWidth = .6;
+    // one path per colour instead of one stroke per pair
+    const paths = colors.map(() => new Path2D());
     for (let i = 0; i < particles.length; i++) {
       const p = particles[i];
       for (let j = i + 1; j < particles.length; j++) {
-        const q = particles[j], dx = p.x - q.x, dy = p.y - q.y, d = dx * dx + dy * dy;
-        if (d < 12000) { const al = (1 - d / 12000) * .22; const c = colors[(p.c + Math.floor(shift)) % 4]; fctx.strokeStyle = `rgba(${c[0]},${c[1]},${c[2]},${al})`; fctx.beginPath(); fctx.moveTo(p.x, p.y); fctx.lineTo(q.x, q.y); fctx.stroke(); }
+        const q = particles[j], dx = p.x - q.x, dy = p.y - q.y;
+        if (dx * dx + dy * dy < 14000) { const path = paths[(p.c + shift) % 4]; path.moveTo(p.x, p.y); path.lineTo(q.x, q.y); }
       }
-      const c = colors[(p.c + Math.floor(shift)) % 4];
-      fctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},.75)`; fctx.beginPath(); fctx.arc(p.x, p.y, p.s, 0, Math.PI * 2); fctx.fill();
     }
-    fieldFrame = requestAnimationFrame(fieldLoop);
+    fctx.lineWidth = .6;
+    paths.forEach((path, k) => { fctx.strokeStyle = `rgba(${colors[k]},.16)`; fctx.stroke(path); });
+    const dots = colors.map(() => new Path2D());
+    for (const p of particles) { const d = dots[(p.c + shift) % 4]; d.moveTo(p.x + p.s, p.y); d.arc(p.x, p.y, p.s, 0, Math.PI * 2); }
+    dots.forEach((d, k) => { fctx.fillStyle = `rgba(${colors[k]},.75)`; fctx.fill(d); });
   }
-  function kickField() { if (!fieldFrame && !state.paused && !document.hidden) fieldFrame = requestAnimationFrame(fieldLoop); }
+  function kickField() { if (!fieldFrame && !state.paused && !document.hidden && particles.length) fieldFrame = requestAnimationFrame(fieldLoop); }
   resizeField(); addEventListener('resize', resizeField); kickField();
+  lightField.addEventListener('change', () => { fw = 0; resizeField(); kickField(); });
   document.addEventListener('visibilitychange', kickField);
   loops.add(p => { if (p) { cancelAnimationFrame(fieldFrame); fieldFrame = 0; fctx.clearRect(0, 0, fw, fh); } else kickField(); });
 
@@ -343,11 +354,26 @@
     railLinks.forEach(a => a.classList.toggle('active', a.dataset.rail === id));
   };
   const sectionObs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) setActive(e.target.id); }), { rootMargin: '-35% 0px -55% 0px' });
-  $$('main section[id]').forEach(s => sectionObs.observe(s));    /* ── Reveal + counters ──────────────────────────────────────── */   const revealObs = new IntersectionObserver(es => es.forEach(e => {     if (!e.isIntersecting) return;     e.target.classList.add('visible'); revealObs.unobserve(e.target);     $$
-('[data-count]', e.target).forEach(runCounter);
+  $$('main section[id]').forEach(s => sectionObs.observe(s));
+
+  /* ── Reveal + counters ──────────────────────────────────────── */
+  const revealObs = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('visible'); revealObs.unobserve(e.target);
+    $$('[data-count]', e.target).forEach(runCounter);
   }), { threshold: .12 });
-  $$('.reveal, .split-heading, .train, .hero-stats').forEach(el => revealObs.observe(el));   function runCounter(el) {     const end = Number(el.dataset.count), t0 = performance.now(), dur = state.paused ? 0 : 1400;     const step = t => { const k = dur ? clamp((t - t0) / dur, 0, 1) : 1; el.textContent = String(Math.round(end * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(step); };     requestAnimationFrame(step);   }   // stagger reveal delays inside grids   $$
-('.bento .card').forEach((c, i) => c.style.setProperty('--d', `${(i % 4) * .08}s`));
+  $$('.reveal, .split-heading, .train, .hero-stats').forEach(el => revealObs.observe(el));
+  function runCounter(el) {
+    const end = Number(el.dataset.count), t0 = performance.now(), dur = state.paused ? 0 : 1400;
+    const step = t => { const k = dur ? clamp((t - t0) / dur, 0, 1) : 1; el.textContent = String(Math.round(end * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  }
+  // stagger reveal delays inside grids
+  $$('.bento .card').forEach((c, i) => c.style.setProperty('--d', `${(i % 4) * .08}s`));
+
+  // pause looping art while it is off-screen (keeps the main thread free while scrolling)
+  const offObs = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('is-off', !e.isIntersecting)), { rootMargin: '80px 0px' });
+  $$('.card-art, .resume-card, .sphere-wrap, .hero-visual, .ticker').forEach(el => offObs.observe(el));
 
   /* ── Colorization slider ────────────────────────────────────── */
   const slider = $('#color-slider'), grayRect = $('#gray-rect'), compare = $('#compare-line');
@@ -425,8 +451,8 @@
     log.classList.remove('swap'); void log.offsetWidth; log.classList.add('swap');
     logEls.epoch.textContent = `epoch ${i + 1}/${epochs.length} · loss ${e.loss.toFixed(2)}`; logEls.date.textContent = e.date; logEls.title.textContent = e.title; logEls.body.textContent = e.body;
     logEls.tags.innerHTML = e.tags.map(t => `<span>${t}</span>`).join('');
-    $$('.pt', pointsWrap).forEach((p, k) => p.classList.toggle('active', k === i));$$
-('.tl-item').forEach(li => li.classList.toggle('active', Number(li.dataset.epoch) === i + 1));
+    $$('.pt', pointsWrap).forEach((p, k) => p.classList.toggle('active', k === i));
+    $$('.tl-item').forEach(li => li.classList.toggle('active', Number(li.dataset.epoch) === i + 1));
   }
   epochs.forEach((e, i) => {
     const b = document.createElement('button'); b.type = 'button'; b.className = 'pt'; b.style.left = `${X(e.t) / 10}%`; b.style.top = `${Y(e.loss) / 360 * 100}%`; b.style.setProperty('--i', i);
@@ -493,6 +519,7 @@
     ['<span class="k">$</span> contact --email', '<b>saadnajib97@hotmail.com</b>'],
     ['<span class="k">$</span> contact --phone', '<b>+49 152 3764 1530</b>'],
     ['<span class="k">$</span> contact --social', 'github.com/saadnajib · in/muhammad-saad-najib · ig: @saad__najib · fb: Muhammad Saad Najib'],
+    ['<span class="k">$</span> cat publications.txt', 'KJCIS 2021 · CNN image colorization → kjcis.kiet.edu.pk'],
     ['<span class="k">$</span> status', '<b>open</b> to ML/CV roles · Kaiserslautern, DE'],
   ];
   let termStarted = false;

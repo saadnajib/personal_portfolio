@@ -8,11 +8,12 @@ Sections are "layers" (Input → Features → Embedding → Training log → Che
 - `styles.css` – design system, animations, responsive layout
 - `script.js` – boot sequence, live portrait viewfinder (Sobel edges / heatmap / patches / depth lens),
   particle field, reticle cursor, 3D skill sphere, training-curve timeline, ⌘K palette, résumé viewer
+- `fonts/` – self-hosted Instrument Serif (the hero name font, SIL OFL)
 - `saad.JPG` – portrait (case-sensitive file name!)
 - `Muhammad_Saad_Najib_CV.pdf` – résumé (view + download)
 - `favicon.svg`, `_headers` (security headers for Cloudflare Pages / Netlify)
 
-No build step, no frameworks, no trackers. Fonts load from jsDelivr.
+No build step, no frameworks, no trackers. Body/mono fonts load from jsDelivr; the name font is self-hosted in `fonts/`.
 
 ## Deploy (GitHub Pages)
 1. Copy all files into the root of the `personal_portfolio` repository (replace the old ones).
@@ -20,7 +21,7 @@ No build step, no frameworks, no trackers. Fonts load from jsDelivr.
 3. Repo → Settings → Pages → Source: “Deploy from a branch”, branch `main`, folder `/ (root)`.
 
 ## Editing content
-- Name / roles / intro: `index.html` hero section; role typewriter list in `script.js` (`roles`).
+- Name / roles / intro: `index.html` hero section; role typewriter list in `script.js` (`roles`). Name font: `--font-name` in `styles.css`.
 - Projects: `.bento` cards in `index.html`.
 - Career timeline: the `epochs` array in `script.js` (chart + log) and the `<ol class="timeline">` list.
 - Contact: `#contact` section, the `termLines` array in `script.js`, and the ⌘K palette list.
@@ -30,3 +31,4 @@ No build step, no frameworks, no trackers. Fonts load from jsDelivr.
 - Motion toggle (⏸ button) + honours `prefers-reduced-motion`.
 - Keyboard: `Ctrl/⌘ + K` opens the command palette; `Esc` closes dialogs and menus.
 - All effects are canvas/CSS; the heaviest work (edge detection) runs once at load.
+- Ambient particle field runs at ~30 fps and is disabled on phones / touch devices; below-the-fold sections use `content-visibility: auto`.
