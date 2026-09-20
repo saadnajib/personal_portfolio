@@ -21,6 +21,7 @@ No build step, no frameworks, no trackers, no third-party requests — fonts are
 3. Repo → Settings → Pages → Source: “Deploy from a branch”, branch `main`, folder `/ (root)`.
 
 ## Editing content
+- After changing `styles.css` or `script.js`, bump the `?v=` query string on their tags in `index.html` so visitors' browsers (and GitHub Pages' cache) fetch the new file.
 - Name / roles / intro: `index.html` hero section; role typewriter list in `script.js` (`roles`). Name font: `--font-name` in `styles.css`.
 - Projects: `.bento` cards in `index.html`.
 - Career timeline: the `epochs` array in `script.js` (chart + log) and the `<ol class="timeline">` list.
