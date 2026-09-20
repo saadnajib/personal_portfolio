@@ -8,12 +8,12 @@ Sections are "layers" (Input → Features → Embedding → Training log → Che
 - `styles.css` – design system, animations, responsive layout
 - `script.js` – boot sequence, live portrait viewfinder (Sobel edges / heatmap / patches / depth lens),
   particle field, reticle cursor, 3D skill sphere, training-curve timeline, ⌘K palette, résumé viewer
-- `fonts/` – self-hosted Instrument Serif (the hero name font, SIL OFL)
-- `saad.JPG` – portrait (case-sensitive file name!)
+- `fonts/` – all four fonts, self-hosted latin woff2 (Inter Tight for the name, Syne, Space Grotesk, JetBrains Mono; SIL OFL)
+- `saad.webp` + `saad.JPG` – portrait, 960×1280 (WebP served first, JPG fallback; case-sensitive file names!)
 - `Muhammad_Saad_Najib_CV.pdf` – résumé (view + download)
 - `favicon.svg`, `_headers` (security headers for Cloudflare Pages / Netlify)
 
-No build step, no frameworks, no trackers. Body/mono fonts load from jsDelivr; the name font is self-hosted in `fonts/`.
+No build step, no frameworks, no trackers, no third-party requests — fonts are self-hosted in `fonts/`.
 
 ## Deploy (GitHub Pages)
 1. Copy all files into the root of the `personal_portfolio` repository (replace the old ones).
@@ -25,6 +25,7 @@ No build step, no frameworks, no trackers. Body/mono fonts load from jsDelivr; t
 - Projects: `.bento` cards in `index.html`.
 - Career timeline: the `epochs` array in `script.js` (chart + log) and the `<ol class="timeline">` list.
 - Contact: `#contact` section, the `termLines` array in `script.js`, and the ⌘K palette list.
+- Portrait: replace both `saad.webp` and `saad.JPG` (keep 3:4, ~960×1280).
 - Résumé: replace `Muhammad_Saad_Najib_CV.pdf` (keep the file name) and update “updated 2026” text.
 
 ## Accessibility & performance

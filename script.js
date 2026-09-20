@@ -110,7 +110,7 @@
   function buildLayers() {
     if (!pctx || !pImg.naturalWidth) return;
     const rect = vfFrame.getBoundingClientRect();
-    const dpr = Math.min(devicePixelRatio || 1, 2);
+    const dpr = Math.min(devicePixelRatio || 1, 1.5);
     W = Math.round(rect.width * dpr); H = Math.round(rect.height * dpr);
     if (!W || !H) return;
     pCanvas.width = W; pCanvas.height = H;
