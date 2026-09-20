@@ -1,12 +1,3 @@
-Here is the fully updated **`index.html`** file.
-
-I have updated the "Automatic image colorization" project card to link directly to your published article, added the journal's website link to your Honors section, and updated your Instagram link with the exact tracking URL you provided.
-
-*(Note: Your `styles.css` and `script.js` files remain exactly the same as the previous step and do not need to be updated again).*
-
-### `index.html`
-
-```html
 <!doctype html>
 <html lang="en">
 <head>
@@ -20,12 +11,14 @@ I have updated the "Automatic image colorization" project card to link directly 
   <meta property="og:image" content="./saad.JPG">
   <title>Muhammad Saad Najib — Machine Learning & Computer Vision</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="preload" as="image" href="./saad.JPG">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="./fonts/instrument-serif-latin-400-normal.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="./fonts/instrument-serif-latin-400-italic.woff2" crossorigin>
+  <link rel="preload" as="image" href="./saad.JPG" fetchpriority="high">
+  <link rel="stylesheet" href="./styles.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/syne@5/index.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/space-grotesk@5/index.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/jetbrains-mono@5/index.css">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css">
   <script src="./script.js" defer></script>
 </head>
 <body>
@@ -49,7 +42,6 @@ I have updated the "Automatic image colorization" project card to link directly 
 
   <!-- ░░ AMBIENT ░░ -->
   <canvas id="field" class="field" aria-hidden="true"></canvas>
-  <div class="noise" aria-hidden="true"></div>
   <div class="cursor" id="cursor" aria-hidden="true">
     <i class="cursor-ring"></i><i class="cursor-dot"></i>
     <span class="cursor-label" id="cursor-label"></span>
@@ -115,7 +107,7 @@ I have updated the "Automatic image colorization" project card to link directly 
       <div class="hero-visual" id="viewfinder" aria-label="Portrait of Muhammad Saad Najib rendered through a live computer-vision viewfinder">
         <div class="vf-frame">
           <canvas id="portrait" class="portrait" aria-hidden="true"></canvas>
-          <img src="./saad.JPG" alt="Muhammad Saad Najib" class="portrait-fallback" id="portrait-src" decoding="async">
+          <img src="./saad.JPG" alt="Muhammad Saad Najib" class="portrait-fallback" id="portrait-src" decoding="async" fetchpriority="high">
           <div class="vf-scan" id="vf-scan" aria-hidden="true"></div>
           <div class="vf-box" id="vf-box" aria-hidden="true">
             <span class="vf-tag">subject · M. S. Najib <b>0.998</b></span>
@@ -379,7 +371,7 @@ I have updated the "Automatic image colorization" project card to link directly 
           </div>
           <hr>
           <ul class="honors">
-            <li><b>2021</b> <a href="https://kjcis.kiet.edu.pk/index.php/kjcis" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; text-decoration-color: var(--aqua); text-underline-offset: 4px;">Paper published</a> — KIET Journal of Computing &amp; Information Sciences (HEC 'Y')</li>
+            <li><b>2021</b> Paper published — <a class="inline-link" href="https://kjcis.kiet.edu.pk/index.php/kjcis" target="_blank" rel="noopener noreferrer" data-label="journal">KIET Journal of Computing &amp; Information Sciences</a> (HEC 'Y') · <a class="inline-link" href="https://kjcis.kiet.edu.pk/index.php/kjcis/article/view/159/73" target="_blank" rel="noopener noreferrer" data-label="read paper">Read the article ↗</a></li>
             <li><b>2020</b> GitHub Arctic Code Vault contributor</li>
             <li><b>2020</b> Amal Career Prep Fellowship (Stanford-funded)</li>
           </ul>
@@ -436,8 +428,9 @@ I have updated the "Automatic image colorization" project card to link directly 
             <li><span>Phone</span><a href="tel:+4915237641530" data-label="call">+49 152 3764 1530</a><button class="copy" type="button" data-copy="+4915237641530" aria-label="Copy phone number">copy</button></li>
             <li><span>LinkedIn</span><a href="https://de.linkedin.com/in/muhammad-saad-najib" target="_blank" rel="noopener noreferrer" data-label="linkedin">/in/muhammad-saad-najib</a></li>
             <li><span>GitHub</span><a href="https://github.com/saadnajib" target="_blank" rel="noopener noreferrer" data-label="github">@saadnajib</a></li>
-            <li><span>Instagram</span><a href="https://www.instagram.com/saad__najib?stkn=aHJ1bnh1a2tlYzd6&utm_source=qr" target="_blank" rel="noopener noreferrer" data-label="instagram">@saad__najib</a></li>
+            <li><span>Instagram</span><a href="https://www.instagram.com/saad__najib?stkn=aHJ1bnh1a2tlYzd6&amp;utm_source=qr" target="_blank" rel="noopener noreferrer" data-label="instagram">@saad__najib</a></li>
             <li><span>Facebook</span><a href="https://www.facebook.com/share/1HinXNmikk/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" data-label="facebook">Muhammad Saad Najib</a></li>
+            <li><span>Paper</span><a href="https://kjcis.kiet.edu.pk/index.php/kjcis/article/view/159/73" target="_blank" rel="noopener noreferrer" data-label="read paper">Image colorization · KJCIS 2021</a><a class="copy" href="https://kjcis.kiet.edu.pk/index.php/kjcis" target="_blank" rel="noopener noreferrer" data-label="journal">journal</a></li>
             <li><span>Location</span><em>Kaiserslautern, Germany · open to relocation</em></li>
           </ul>
         </div>
@@ -471,8 +464,10 @@ I have updated the "Automatic image colorization" project card to link directly 
       <li role="option" data-action="./Muhammad_Saad_Najib_CV.pdf" data-new data-keywords="resume cv pdf download"><span>↓</span>Download résumé PDF<kbd>file</kbd></li>
       <li role="option" data-action="https://github.com/saadnajib" data-new><span>↗</span>Open GitHub<kbd>link</kbd></li>
       <li role="option" data-action="https://de.linkedin.com/in/muhammad-saad-najib" data-new><span>↗</span>Open LinkedIn<kbd>link</kbd></li>
-      <li role="option" data-action="https://www.instagram.com/saad__najib?stkn=aHJ1bnh1a2tlYzd6&utm_source=qr" data-new><span>↗</span>Open Instagram<kbd>link</kbd></li>
+      <li role="option" data-action="https://www.instagram.com/saad__najib?stkn=aHJ1bnh1a2tlYzd6&amp;utm_source=qr" data-new><span>↗</span>Open Instagram<kbd>link</kbd></li>
       <li role="option" data-action="https://www.facebook.com/share/1HinXNmikk/?mibextid=wwXIfr" data-new><span>↗</span>Open Facebook<kbd>link</kbd></li>
+      <li role="option" data-action="https://kjcis.kiet.edu.pk/index.php/kjcis/article/view/159/73" data-new data-keywords="paper publication article colorization research"><span>↗</span>Read published paper<kbd>link</kbd></li>
+      <li role="option" data-action="https://kjcis.kiet.edu.pk/index.php/kjcis" data-new data-keywords="paper journal kjcis kiet"><span>↗</span>Open KJCIS journal<kbd>link</kbd></li>
       <li role="option" data-action="mailto:saadnajib97@hotmail.com"><span>@</span>Email saadnajib97@hotmail.com<kbd>mail</kbd></li>
       <li role="option" data-action="tel:+4915237641530"><span>☏</span>Call +49 152 3764 1530<kbd>tel</kbd></li>
       <li role="option" data-action="toggle-motion"><span>⏯</span>Toggle motion<kbd>setting</kbd></li>
@@ -480,5 +475,3 @@ I have updated the "Automatic image colorization" project card to link directly 
   </dialog>
 </body>
 </html>
-
-```
