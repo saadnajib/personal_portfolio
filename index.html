@@ -2,97 +2,467 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#101210">
-  <meta name="description" content="Muhammad Saad Najib — machine learning, computer vision and thoughtful engineering. Explore projects, research and experience.">
-  <meta property="og:title" content="Muhammad Saad Najib — AI & Machine Learning">
-  <meta property="og:description" content="Turning curiosity into intelligent systems. Selected projects in machine learning and computer vision.">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#05070b">
+  <meta name="description" content="Muhammad Saad Najib — machine learning & computer vision engineer. Image colorization research, face recognition pipelines, 3D human understanding. Portfolio, experience and résumé.">
+  <meta property="og:title" content="Muhammad Saad Najib — Machine Learning & Computer Vision">
+  <meta property="og:description" content="A portfolio that runs inference on itself. Projects in deep learning, computer vision and 3D human understanding.">
   <meta property="og:type" content="website">
-  <title>Muhammad Saad Najib — AI & Machine Learning</title>
+  <meta property="og:image" content="./saad.JPG">
+  <title>Muhammad Saad Najib — Machine Learning & Computer Vision</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <link rel="preload" as="image" href="./saad.JPG">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/syne@5/index.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/space-grotesk@5/index.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/jetbrains-mono@5/index.css">
   <link rel="stylesheet" href="./styles.css">
   <script src="./script.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
-  <div class="scroll-progress" aria-hidden="true"></div>
-  <header class="site-header">
-    <a href="#home" class="wordmark" aria-label="Saad Najib home">saad<span> / </span>najib<span class="brand-dot">.</span></a>
-    <nav aria-label="Main navigation" id="navigation">
-      <a href="#work">Work<span>01</span></a><a href="#about">About<span>02</span></a><a href="#experience">Experience<span>03</span></a>
+
+  <!-- ░░ BOOT SEQUENCE ░░ -->
+  <div class="boot" id="boot" aria-hidden="true">
+    <div class="boot-inner">
+      <div class="boot-logo">MSN<span>.</span></div>
+      <ol class="boot-log" id="boot-log">
+        <li>mounting portfolio.sys</li>
+        <li>loading weights ······· 163 layers</li>
+        <li>calibrating camera</li>
+        <li>detecting subject → <b>Muhammad Saad Najib</b></li>
+        <li>confidence 0.998 · rendering</li>
+      </ol>
+      <div class="boot-bar"><i id="boot-bar"></i></div>
+      <span class="boot-pct" id="boot-pct">0%</span>
+    </div>
+  </div>
+
+  <!-- ░░ AMBIENT ░░ -->
+  <canvas id="field" class="field" aria-hidden="true"></canvas>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="cursor" id="cursor" aria-hidden="true">
+    <i class="cursor-ring"></i><i class="cursor-dot"></i>
+    <span class="cursor-label" id="cursor-label"></span>
+    <span class="cursor-coord" id="cursor-coord">x 0000 · y 0000</span>
+  </div>
+  <div class="scroll-progress" aria-hidden="true"><i id="scroll-progress"></i></div>
+
+  <!-- ░░ LAYER RAIL ░░ -->
+  <nav class="rail" aria-label="Section layers">
+    <a href="#home" data-rail="home"><i></i><span>00 · INPUT</span></a>
+    <a href="#work" data-rail="work"><i></i><span>01 · FEATURES</span></a>
+    <a href="#about" data-rail="about"><i></i><span>02 · EMBEDDING</span></a>
+    <a href="#experience" data-rail="experience"><i></i><span>03 · TRAINING</span></a>
+    <a href="#resume" data-rail="resume"><i></i><span>04 · WEIGHTS</span></a>
+    <a href="#contact" data-rail="contact"><i></i><span>05 · OUTPUT</span></a>
+  </nav>
+
+  <!-- ░░ HEADER ░░ -->
+  <header class="site-header" id="top">
+    <a href="#home" class="wordmark" data-label="home">
+      <span class="wordmark-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="wordmark-text">Muhammad Saad Najib</span>
+    </a>
+    <nav class="main-nav" id="navigation" aria-label="Main navigation">
+      <a href="#work" data-label="projects"><em>01</em>Work</a>
+      <a href="#about" data-label="about"><em>02</em>About</a>
+      <a href="#experience" data-label="experience"><em>03</em>Experience</a>
+      <a href="#resume" data-label="résumé"><em>04</em>Résumé</a>
+      <a href="#contact" data-label="contact"><em>05</em>Contact</a>
     </nav>
-    <a class="header-contact" href="#contact">Let’s talk <span aria-hidden="true">↗</span></a>
-    <button class="menu-toggle" aria-expanded="false" aria-controls="navigation" aria-label="Open navigation"><span></span><span></span></button>
+    <div class="header-tools">
+      <span class="clock" id="clock" title="Local time · Kaiserslautern, Germany"><i class="status-dot"></i><span id="clock-time">--:--</span> DE</span>
+      <button class="cmd-button" id="cmd-open" type="button" aria-label="Open command palette" data-label="command palette"><span>⌘</span>K</button>
+      <button class="motion-toggle" id="motion-toggle" type="button" aria-pressed="false" aria-label="Pause visual effects" data-label="motion">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path class="ico-pause" d="M7 5h3v14H7zM14 5h3v14h-3z" fill="currentColor"/><path class="ico-play" d="M7 4l12 8-12 8z" fill="currentColor"/></svg>
+      </button>
+      <button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="navigation" aria-label="Open navigation"><span></span><span></span><span></span></button>
+    </div>
   </header>
+
   <main id="main">
+    <!-- ░░ HERO / INPUT LAYER ░░ -->
     <section class="hero section-wrap" id="home" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <p class="eyebrow"><span class="status-dot"></span> MACHINE LEARNING · COMPUTER VISION</p>
-        <h1 id="hero-title">A curious mind.<br>A world of<br><span class="serif accent">possibilities.</span></h1>
-        <p class="hero-intro">Hi, I’m <strong>Muhammad Saad Najib.</strong><br>I turn data into understanding, and ideas into intelligent systems.</p>
-        <div class="hero-actions"><a class="button primary" href="#work">Explore my work <span aria-hidden="true">↗</span></a><a class="text-link" href="https://github.com/saadnajib" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a></div>
+        <p class="eyebrow eyebrow-live"><span class="status-dot"></span>LAYER 00 · INPUT <span class="sep">/</span> <span id="role-type" class="role-type">machine learning engineer</span><span class="caret" aria-hidden="true"></span></p>
+        <h1 id="hero-title" class="hero-title">
+          <span class="line line-first"><span class="word" data-split>Muhammad</span></span>
+          <span class="line"><span class="word" data-split>Saad</span><span class="title-tag">M.Sc. · CS</span></span>
+          <span class="line"><span class="word accent" data-split>Najib</span></span>
+        </h1>
+        <p class="hero-intro">I build systems that <em>see</em>. From a published image-colorization network to face-recognition pipelines and 3D human understanding — I turn pixels into decisions.</p>
+        <div class="hero-actions">
+          <a class="button primary magnetic" href="#work" data-label="explore"><span>Explore the work</span><i aria-hidden="true">↘</i></a>
+          <a class="button ghost magnetic" href="./Muhammad_Saad_Najib_CV.pdf" download="Muhammad_Saad_Najib_CV.pdf" data-label="download cv"><span>Download résumé</span><i aria-hidden="true">↓</i></a>
+        </div>
+        <ul class="hero-stats" aria-label="Quick facts">
+          <li><b data-count="6">0</b><span>years in AI &amp; software</span></li>
+          <li><b data-count="12">0</b><span>vision projects shipped</span></li>
+          <li><b data-count="1">0</b><span>published paper</span></li>
+        </ul>
       </div>
-      <div class="hero-art" aria-label="Interactive abstract neural network visualization">
-        <div class="art-grid" aria-hidden="true"></div>
-        <span class="art-coordinate top">FIG. 01 — THE CONNECTED MIND</span>
-        <canvas id="neural-canvas" aria-hidden="true"></canvas>
-        <div class="orbit-label" aria-hidden="true"><span class="status-dot"></span> curiosity → intelligence</div>
-        <div class="art-footer"><span>HUMAN CURIOSITY.<br>MACHINE POSSIBILITIES.</span><button id="motion-toggle" type="button" aria-pressed="false" aria-label="Pause visual effects">Pause motion <span aria-hidden="true">Ⅱ</span></button></div>
-      </div>
-      <div class="hero-bottom"><span>RESEARCH MINDSET. ENGINEERING INSTINCT.</span><a href="#work">SCROLL TO EXPLORE <span aria-hidden="true">↓</span></a></div>
-    </section>
-    <div class="discipline-strip" aria-label="Areas of focus"><div>Machine learning <span>✳</span> Computer vision <span>✳</span> Deep learning <span>✳</span> Data analysis <span>✳</span> Creative problem solving <span>✳</span></div></div>
-    <section id="work" class="section-wrap section-space" aria-labelledby="work-title">
-      <div class="section-heading reveal"><div><p class="eyebrow">01 / SELECTED WORK</p><h2 id="work-title">Ideas, made <span class="serif">real.</span></h2></div><p>A few explorations at the intersection<br>of data, vision, and engineering.</p></div>
-      <div class="project-grid">
-        <article class="project-card reveal">
-          <div class="project-art colorization">
-            <svg viewBox="0 0 640 380" role="img" aria-label="Illustrative mountain landscape, transitioning from grayscale to color" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="#8abfbf"/><stop offset="1" stop-color="#ecd69b"/></linearGradient><linearGradient id="mount" x2=".7" y2="1"><stop stop-color="#506854"/><stop offset="1" stop-color="#223f40"/></linearGradient><filter id="gray"><feColorMatrix type="saturate" values="0"/></filter><clipPath id="gray-mask"><rect id="gray-rect" width="320" height="380"/></clipPath><g id="landscape"><path fill="url(#sky)" d="M0 0h640v380H0z"/><circle cx="464" cy="103" r="42" fill="#f4e7b5"/><path d="M0 280 143 92 265 230 365 120 640 290v90H0" fill="#779995"/><path d="m70 255 158-164 163 192 131-89 118 100v86H0Z" fill="url(#mount)"/><path d="m170 152 58-61 68 80-66-24-22 18Z" fill="#d4dfd1"/><path d="M0 332q150-118 313-19t327-37v104H0" fill="#2a6355"/><path d="M0 367q159-85 295-13t345-40v66H0" fill="#16493f"/><path d="M0 360q163-57 307 4" stroke="#b2cf8e" fill="none" stroke-width="2"/></g></defs><use href="#landscape"/><g clip-path="url(#gray-mask)" filter="url(#gray)"><use href="#landscape"/></g></svg>
-            <span class="art-chip left">GRAYSCALE</span><span class="art-chip right">COLORIZED</span><div class="compare-line" aria-hidden="true"><span>↔</span></div>
-            <label class="sr-only" for="color-slider">Adjust illustrative grayscale and color comparison</label><input type="range" id="color-slider" min="0" max="100" value="50" aria-valuetext="50 percent grayscale" title="Drag to explore the color transition">
-            <span class="art-caption">INTERACTIVE CONCEPT VISUAL · DRAG TO EXPLORE</span>
+
+      <div class="hero-visual" id="viewfinder" aria-label="Portrait of Muhammad Saad Najib rendered through a live computer-vision viewfinder">
+        <div class="vf-frame">
+          <canvas id="portrait" class="portrait" aria-hidden="true"></canvas>
+          <img src="./saad.JPG" alt="Muhammad Saad Najib" class="portrait-fallback" id="portrait-src" decoding="async">
+          <div class="vf-scan" id="vf-scan" aria-hidden="true"></div>
+          <div class="vf-box" id="vf-box" aria-hidden="true">
+            <span class="vf-tag">subject · M. S. Najib <b>0.998</b></span>
+            <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
           </div>
-          <div class="project-info"><div class="project-meta"><span>01 / COMPUTER VISION</span><span>Python · GANs</span></div><a class="project-title" href="https://github.com/saadnajib/GAN-Image-colorization-API-master" target="_blank" rel="noopener noreferrer"><h3>Bringing grayscale to life</h3><span aria-hidden="true">↗</span></a><p>Exploring image colorization with deep learning: learning how to bring color back to grayscale images.</p><div class="tags"><span>Image colorization</span><span>Deep learning</span></div></div>
-        </article>
-        <article class="project-card reveal">
-          <a class="project-art face-art" href="https://github.com/saadnajib/facenet-implementation-2" target="_blank" rel="noopener noreferrer" aria-label="Explore FaceNet implementation on GitHub"><div class="face-grid"></div><svg viewBox="0 0 640 380" aria-hidden="true"><g fill="none" stroke="#a5c29e" stroke-width="1.2" opacity=".8"><path d="M320 53 262 68 227 122 222 196 247 267 288 310 320 324 352 310 393 267 418 196 413 122 378 68Z"/><path d="m262 68 58 52 58-52M227 122l93-2 93 2M222 196l54-42 44-34 44 34 54 42M247 267l32-60 41-87 41 87 32 60M288 310l32-57 32 57M247 267l73-14 73 14M222 196l57 11 41 46 41-46 57-11M262 68l14 86 3 53 9 103M378 68l-14 86-3 53-9 103M276 154l88 0M279 207l82 0M288 280l32 10 32-10M304 221l16-8 16 8"/></g><g fill="#c4ef92"><circle cx="262" cy="68" r="3"/><circle cx="378" cy="68" r="3"/><circle cx="276" cy="154" r="4"/><circle cx="364" cy="154" r="4"/><circle cx="320" cy="120" r="3"/><circle cx="279" cy="207" r="3"/><circle cx="361" cy="207" r="3"/><circle cx="320" cy="253" r="4"/><circle cx="288" cy="310" r="3"/><circle cx="352" cy="310" r="3"/></g><path d="M199 91V58h33m176 0h33v33M199 286v33h33m176 0h33v-33" fill="none" stroke="#c4ef92" stroke-width="2"/></svg><div class="scan-line"></div><span class="art-chip left">FEATURE SPACE</span><span class="face-code">face → embedding<br>embedding → recognition</span><span class="art-caption">FACENET · CONCEPT VISUALIZATION</span></a>
-          <div class="project-info"><div class="project-meta"><span>02 / FACE RECOGNITION</span><span>Python · FaceNet</span></div><a class="project-title" href="https://github.com/saadnajib/facenet-implementation-2" target="_blank" rel="noopener noreferrer"><h3>Beyond the pixels</h3><span aria-hidden="true">↗</span></a><p>A FaceNet implementation exploring face alignment, feature extraction, and recognition in images and video.</p><div class="tags"><span>Face embeddings</span><span>Recognition pipeline</span></div></div>
-        </article>
-        <article class="project-card compact-card reveal"><a class="mini-art pose-art" href="https://github.com/saadnajib/Head-Pose-Android-App" target="_blank" rel="noopener noreferrer" aria-label="Head pose Android app on GitHub"><div class="pose-rings" aria-hidden="true"><i></i><i></i><i></i><b>↗</b></div><span>YAW / PITCH / ROLL</span></a><div class="project-info"><div class="project-meta"><span>03 / MOBILE VISION</span></div><a class="project-title" href="https://github.com/saadnajib/Head-Pose-Android-App" target="_blank" rel="noopener noreferrer"><h3>A different perspective</h3><span aria-hidden="true">↗</span></a><p>An Android exploration of head-pose detection and threshold-based image capture.</p><div class="tags"><span>Android</span><span>Head-pose detection</span></div></div></article>
-        <article class="project-card compact-card reveal"><a class="mini-art cv-art" href="https://github.com/saadnajib/OpenCv" target="_blank" rel="noopener noreferrer" aria-label="OpenCV experiments on GitHub"><div class="pixel-grid" aria-hidden="true"></div><span>SEE / DETECT / UNDERSTAND</span></a><div class="project-info"><div class="project-meta"><span>04 / EXPERIMENTS</span></div><a class="project-title" href="https://github.com/saadnajib/OpenCv" target="_blank" rel="noopener noreferrer"><h3>Teaching machines to see</h3><span aria-hidden="true">↗</span></a><p>A collection of OpenCV experiments, from image processing to face detection and feature extraction.</p><div class="tags"><span>OpenCV</span><span>Image processing</span></div></div></article>
+          <div class="vf-hud" aria-hidden="true">
+            <span class="hud tl">REC <i class="rec"></i> CAM_01</span>
+            <span class="hud tr" id="hud-mode">MODE · COLORIZE</span>
+            <span class="hud bl" id="hud-readout">σ 0.00 · μ 0.00</span>
+            <span class="hud br">1200 × 1600 · RGB</span>
+          </div>
+          <div class="vf-grid" aria-hidden="true"></div>
+        </div>
+        <div class="vf-caption">
+          <span>FIG. 00 — hover / touch the portrait to see what the network sees</span>
+          <button type="button" class="vf-mode" id="vf-mode" data-label="toggle lens">lens: <b>edges</b></button>
+        </div>
+        <div class="orbit orbit-a" aria-hidden="true"></div>
+        <div class="orbit orbit-b" aria-hidden="true"></div>
       </div>
-      <a class="all-projects reveal" href="https://github.com/saadnajib" target="_blank" rel="noopener noreferrer"><span>There’s more where that came from.</span><strong>Explore my GitHub <span aria-hidden="true">↗</span></strong></a>
+
+      <a class="scroll-cue" href="#work" aria-label="Scroll to work"><span>scroll</span><i></i></a>
     </section>
-    <section id="about" class="about-section section-space" aria-labelledby="about-title"><div class="section-wrap about-grid">
-      <div class="about-title reveal">
-        <p class="eyebrow">02 / THE PERSON BEHIND THE CODE</p>
-        <h2 id="about-title">Driven by<br><span class="serif accent">“what if?”</span></h2>
-        <img src="./saad.jpg" alt="Muhammad Saad Najib" class="profile-pic">
-        <span class="small-note">ALWAYS LEARNING. ALWAYS BUILDING.</span>
-      </div>
-      <div class="about-copy reveal"><p class="large-copy">I’m Saad, a computer science graduate with a fascination for how machines <em>learn, see, and understand.</em></p><p>My work spans machine learning pipelines, facial recognition, and image colorization. From product development at Aletheia AI to research at DFKI, I’ve enjoyed connecting technical ideas with practical problems.</p><p>Alongside my M.Sc. studies at RPTU, I’m drawn to the analytical side of engineering: asking better questions, making sense of data, and learning through experimentation.</p><p>Beyond the code, I value communication, teamwork, and giving back. I’ve raised funds for education, captained a departmental football team, and learned that good work is rarely a solo effort.</p><div class="toolbox"><h3>My working toolkit</h3><div class="skill-tags"><span>Python</span><span>Machine learning</span><span>Deep learning</span><span>OpenCV</span><span>Image processing</span><span>Data analysis</span><span>C / C++ / C#</span><span>JavaScript</span><span>React</span></div></div></div>
-    </div></section>
-    <section id="experience" class="section-wrap section-space" aria-labelledby="experience-title"><div class="section-heading reveal"><div><p class="eyebrow">03 / THE JOURNEY SO FAR</p><h2 id="experience-title">Learning. Building.<br><span class="serif">Moving forward.</span></h2></div><p>Research, real-world engineering,<br>and a foundation in computer science.</p></div>
-      <div class="journey-grid"><div class="timeline">
-        <article class="timeline-item reveal"><div class="timeline-date">OCT 2022 — SEP 2023</div><div><p class="company">DFKI <span>· German Research Center for Artificial Intelligence</span></p><h3>Research Assistant</h3><p>Worked on machine learning pipelines, semantic datatype checking, and dataset generation, using large datasets to build predictive models.</p></div></article>
-        <article class="timeline-item reveal"><div class="timeline-date">NOV 2020 — MAR 2022</div><div><p class="company">Aletheia AI</p><h3>Machine Learning Engineer</h3><p>Progressed from an internship in system deployment to a full-time product development role, contributing to a facial recognition pipeline.</p></div></article>
-        <article class="timeline-item reveal"><div class="timeline-date">2016 — 2020</div><div><p class="company">Early explorations</p><h3>A foundation in building</h3><p>Internships in AI, front-end development, web development, and IT at Digital Landscape, Interns Pakistan, Pakistan Civil Aviation Authority, and PTV.</p></div></article>
-      </div><aside class="education-card reveal"><span class="education-icon" aria-hidden="true">↗</span><p class="eyebrow">ACADEMIC FOUNDATION</p><h3>M.Sc. studies<br>Computer Science</h3><p>RPTU Rheinland-Pfälzische Technische Universität</p><span class="education-date">2022 — 2026 · CV study period</span><hr><h3>B.Sc. Computer Science</h3><p>Usman Institute of Technology<br>Affiliated with NED University</p><span class="education-date">2016 — 2020</span><div class="honor">↗ 4th position in the department</div></aside></div>
-      <div class="recognition-grid"><article class="recognition reveal"><span class="recognition-symbol" aria-hidden="true">✳</span><p class="eyebrow">PUBLISHED RESEARCH / 2021</p><h3>From final-year project<br>to published research.</h3><p>“An efficient Convolutional Neural Network based Image Colorization Technique” — KIET Journal of Computing and Information Sciences.</p></article><article class="recognition reveal"><span class="recognition-symbol" aria-hidden="true">⌘</span><p class="eyebrow">CONTINUOUS LEARNING</p><h3>The learning<br>doesn’t stop.</h3><p>Coursework and certifications in neural networks, deep learning optimization, data science, machine learning, PyTorch, and React.</p></article></div>
-    </section>
-    <section id="contact" class="contact-section section-space" aria-labelledby="contact-title"><div class="section-wrap"><div class="contact-top reveal"><p class="eyebrow"><span class="status-dot"></span>04 / LET’S CONNECT</p><span class="contact-asterisk" aria-hidden="true">✳</span></div><h2 class="reveal" id="contact-title">Great things start<br>with a <span class="serif accent">conversation.</span></h2><div class="contact-bottom reveal"><p>Have an interesting problem, a research idea,<br>or just want to say hello? I’d love to hear from you.</p><a class="button primary" href="mailto:saadnajib97@hotmail.com">Say hello <span aria-hidden="true">↗</span></a></div>
-    <div class="contact-links">
-      <div class="contact-methods">
-        <a href="mailto:saadnajib97@hotmail.com">saadnajib97@hotmail.com <span aria-hidden="true">↗</span></a>
-        <a href="tel:+4915237641530">+49 152 376 41530 <span aria-hidden="true">↗</span></a>
-      </div>
-      <div>
-        <a href="https://de.linkedin.com/in/muhammad-saad-najib" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
-        <a href="https://github.com/saadnajib" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker-track">
+        <span>Machine Learning</span><b>◆</b><span>Computer Vision</span><b>◆</b><span>Deep Learning</span><b>◆</b><span>Face Recognition</span><b>◆</b><span>Image Colorization</span><b>◆</b><span>3D Human Understanding</span><b>◆</b><span>PyTorch</span><b>◆</b><span>OpenCV</span><b>◆</b><span>Data Analysis</span><b>◆</b>
+        <span>Machine Learning</span><b>◆</b><span>Computer Vision</span><b>◆</b><span>Deep Learning</span><b>◆</b><span>Face Recognition</span><b>◆</b><span>Image Colorization</span><b>◆</b><span>3D Human Understanding</span><b>◆</b><span>PyTorch</span><b>◆</b><span>OpenCV</span><b>◆</b><span>Data Analysis</span><b>◆</b>
       </div>
     </div>
-    </div></section>
+
+    <!-- ░░ WORK / FEATURE LAYER ░░ -->
+    <section id="work" class="section-wrap section-space" aria-labelledby="work-title">
+      <div class="section-heading reveal">
+        <div>
+          <p class="eyebrow">LAYER 01 · FEATURE EXTRACTION</p>
+          <h2 id="work-title" class="split-heading">Selected <span class="accent">work</span></h2>
+        </div>
+        <p class="section-note">Eight activations from the last six years.<br>Hover a card to inspect it. Every visual is generated live — no images.</p>
+      </div>
+
+      <div class="bento">
+        <article class="card card-lg tilt reveal" data-label="colorization">
+          <div class="card-art art-colorize" aria-hidden="true">
+            <svg viewBox="0 0 600 340" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="g-sky" x2="0" y2="1"><stop stop-color="#5ef2e0"/><stop offset="1" stop-color="#ffb454"/></linearGradient>
+                <linearGradient id="g-mnt" x2=".8" y2="1"><stop stop-color="#7c5cff"/><stop offset="1" stop-color="#1a1440"/></linearGradient>
+                <filter id="f-gray"><feColorMatrix type="saturate" values="0"/></filter>
+                <clipPath id="clip-gray"><rect id="gray-rect" width="300" height="340"/></clipPath>
+                <g id="scene">
+                  <rect width="600" height="340" fill="url(#g-sky)"/>
+                  <circle cx="440" cy="90" r="40" fill="#fff4d6"/>
+                  <path d="M0 250 130 95 240 210 340 110 600 270v70H0z" fill="#3f2e9c" opacity=".7"/>
+                  <path d="M60 230 210 70l150 180 120-85 60 60v115H0z" fill="url(#g-mnt)"/>
+                  <path d="M0 300q150-90 300-15t300-30v85H0z" fill="#10233a"/>
+                </g>
+              </defs>
+              <use href="#scene"/>
+              <g clip-path="url(#clip-gray)" filter="url(#f-gray)"><use href="#scene"/></g>
+            </svg>
+            <div class="compare-line" id="compare-line"><span>⇆</span></div>
+            <label class="sr-only" for="color-slider">Compare grayscale and colorized</label>
+            <input type="range" id="color-slider" min="0" max="100" value="50" aria-valuetext="50 percent">
+            <span class="chip l">L · grayscale</span><span class="chip r">ab · predicted</span>
+          </div>
+          <div class="card-body">
+            <div class="card-meta"><span>01 / PUBLISHED RESEARCH</span><span>CNN · GAN · PyTorch</span></div>
+            <a class="card-title" href="https://github.com/saadnajib/GAN-Image-colorization-API-master" target="_blank" rel="noopener noreferrer"><h3>Automatic image colorization</h3><i aria-hidden="true">↗</i></a>
+            <p>A CNN that learns L→ab colour mappings, later extended with a GAN and served as an API. Published in the KIET Journal of Computing &amp; Information Sciences (2021).</p>
+            <div class="tags"><span>Deep learning</span><span>Generative</span><span>Paper</span></div>
+          </div>
+        </article>
+
+        <article class="card card-md tilt reveal" data-label="face recognition">
+          <div class="card-art art-face" aria-hidden="true">
+            <svg viewBox="0 0 400 300">
+              <g fill="none" stroke="rgba(94,242,224,.75)" stroke-width="1.1">
+                <path d="M200 40 150 55 120 100 116 165 136 225 170 262 200 274 230 262 264 225 284 165 280 100 250 55Z"/>
+                <path d="M150 55l50 44 50-44M120 100l80-2 80 2M116 165l46-36 38-30 38 30 46 36M136 225l28-52 36-72 36 72 28 52M170 262l30-48 30 48M136 225l64-12 64 12M116 165l50 9 34 40 34-40 50-9"/>
+              </g>
+              <g fill="#5ef2e0" class="lm"><circle cx="150" cy="55" r="3"/><circle cx="250" cy="55" r="3"/><circle cx="162" cy="129" r="3.5"/><circle cx="238" cy="129" r="3.5"/><circle cx="200" cy="99" r="3"/><circle cx="200" cy="213" r="3.5"/><circle cx="170" cy="262" r="3"/><circle cx="230" cy="262" r="3"/></g>
+              <path d="M90 70V40h30M280 40h30v30M90 230v30h30M310 230v30h-30" fill="none" stroke="#ff5c7a" stroke-width="2"/>
+            </svg>
+            <div class="scanline"></div>
+            <code class="art-code">face → 512-d embedding<br>cos(θ) = 0.91 ✓ match</code>
+          </div>
+          <div class="card-body">
+            <div class="card-meta"><span>02 / PRODUCTION PIPELINE</span><span>FaceNet · ArcFace · OpenVINO</span></div>
+            <a class="card-title" href="https://github.com/saadnajib/facenet-implementation-2" target="_blank" rel="noopener noreferrer"><h3>Face recognition pipeline</h3><i aria-hidden="true">↗</i></a>
+            <p>Detection, alignment, embedding and matching — FaceNet, ArcFace &amp; CosFace inference plus RetinaFace on OpenVINO, built for Aletheia AI's product.</p>
+            <div class="tags"><span>Embeddings</span><span>Edge inference</span></div>
+          </div>
+        </article>
+
+        <article class="card card-md tilt reveal" data-label="3d humans">
+          <div class="card-art art-mesh" aria-hidden="true">
+            <svg viewBox="0 0 400 300" class="mesh-svg">
+              <g stroke="rgba(124,92,255,.8)" stroke-width="1.4" fill="none" stroke-linecap="round">
+                <path d="M200 60v60M200 120l-45 30M200 120l45 30M155 150l-15 70M245 150l15 70M200 120l-30 90M200 120l30 90M170 210l-10 60M230 210l10 60"/>
+              </g>
+              <g fill="#7c5cff"><circle cx="200" cy="60" r="10"/><circle cx="200" cy="120" r="4"/><circle cx="155" cy="150" r="4"/><circle cx="245" cy="150" r="4"/><circle cx="140" cy="220" r="4"/><circle cx="260" cy="220" r="4"/><circle cx="170" cy="210" r="4"/><circle cx="230" cy="210" r="4"/><circle cx="160" cy="270" r="4"/><circle cx="240" cy="270" r="4"/></g>
+              <g class="mesh-grid" stroke="rgba(94,242,224,.18)"><path d="M40 280h320M60 240h280M80 200h240M100 160h200"/></g>
+            </svg>
+            <code class="art-code">θ ∈ ℝ^(J×3) · β ∈ ℝ^11</code>
+          </div>
+          <div class="card-body">
+            <div class="card-meta"><span>03 / M.SC. THESIS · ONGOING</span><span>RPTU · PyTorch</span></div>
+            <a class="card-title" href="https://github.com/saadnajib/Master_Thesis" target="_blank" rel="noopener noreferrer"><h3>3D human mesh recovery</h3><i aria-hidden="true">↗</i></a>
+            <p>Estimating 3D human pose and body shape from single images — adapting large-scale datasets to a new parametric body model and training multi-person recovery networks.</p>
+            <div class="tags"><span>3D vision</span><span>Body models</span><span>Datasets</span></div>
+          </div>
+        </article>
+
+        <article class="card card-sm tilt reveal" data-label="grasp synthesis">
+          <div class="card-art art-grasp" aria-hidden="true"><div class="hand"><i></i><i></i><i></i><i></i><i></i></div><code class="art-code">strain-aware ✓</code></div>
+          <div class="card-body">
+            <div class="card-meta"><span>04 / RESEARCH</span></div>
+            <a class="card-title" href="https://github.com/saadnajib/Egocentric-Grasp-Synthesis-using-Contextual-Reasoning-for-Strain-Aware" target="_blank" rel="noopener noreferrer"><h3>Egocentric grasp synthesis</h3><i aria-hidden="true">↗</i></a>
+            <p>Contextual reasoning for strain-aware hand–object grasps from a first-person view.</p>
+          </div>
+        </article>
+
+        <article class="card card-sm tilt reveal" data-label="head pose">
+          <div class="card-art art-pose" aria-hidden="true"><div class="gyro"><i></i><i></i><i></i></div><code class="art-code">yaw · pitch · roll</code></div>
+          <div class="card-body">
+            <div class="card-meta"><span>05 / MOBILE</span></div>
+            <a class="card-title" href="https://github.com/saadnajib/Head-Pose-Android-App" target="_blank" rel="noopener noreferrer"><h3>Head-pose Android app</h3><i aria-hidden="true">↗</i></a>
+            <p>On-device head-pose estimation with threshold-triggered capture.</p>
+          </div>
+        </article>
+
+        <article class="card card-sm tilt reveal" data-label="opencv">
+          <div class="card-art art-pixels" aria-hidden="true"><div class="pixels" id="pixels"></div><code class="art-code">see · detect · understand</code></div>
+          <div class="card-body">
+            <div class="card-meta"><span>06 / EXPERIMENTS</span></div>
+            <a class="card-title" href="https://github.com/saadnajib/OpenCv" target="_blank" rel="noopener noreferrer"><h3>OpenCV &amp; image processing</h3><i aria-hidden="true">↗</i></a>
+            <p>Filters, Haar cascades, LBPH recognition and feature extraction — the fundamentals, by hand.</p>
+          </div>
+        </article>
+
+        <article class="card card-sm tilt reveal" data-label="cifar-10">
+          <div class="card-art art-classes" aria-hidden="true"><div class="bars"><i style="--h:.92"></i><i style="--h:.31"></i><i style="--h:.58"></i><i style="--h:.2"></i><i style="--h:.75"></i><i style="--h:.44"></i><i style="--h:.12"></i><i style="--h:.66"></i><i style="--h:.38"></i><i style="--h:.5"></i></div><code class="art-code">softmax · 10 classes</code></div>
+          <div class="card-body">
+            <div class="card-meta"><span>07 / CLASSIFICATION</span></div>
+            <a class="card-title" href="https://github.com/saadnajib/Artificial-intelligence" target="_blank" rel="noopener noreferrer"><h3>CIFAR-10 classifier</h3><i aria-hidden="true">↗</i></a>
+            <p>A convolutional classifier across ten object classes — my first end-to-end training loop.</p>
+          </div>
+        </article>
+
+        <article class="card card-sm tilt reveal" data-label="react">
+          <div class="card-art art-ui" aria-hidden="true"><div class="ui"><i></i><i></i><i></i><i></i></div><code class="art-code">&lt;Registry /&gt;</code></div>
+          <div class="card-body">
+            <div class="card-meta"><span>08 / WEB</span></div>
+            <a class="card-title" href="https://github.com/saadnajib/Registry-App-Reactjs" target="_blank" rel="noopener noreferrer"><h3>Registry web app</h3><i aria-hidden="true">↗</i></a>
+            <p>React, plus a WordPress theme written from scratch in PHP and an ASP.NET project — the full-stack side.</p>
+          </div>
+        </article>
+      </div>
+
+      <a class="all-projects reveal magnetic" href="https://github.com/saadnajib" target="_blank" rel="noopener noreferrer" data-label="github"><span>25+ repositories · Arctic Code Vault contributor</span><strong>Open GitHub <i aria-hidden="true">↗</i></strong></a>
+    </section>
+
+    <!-- ░░ ABOUT / EMBEDDING LAYER ░░ -->
+    <section id="about" class="about-section section-space" aria-labelledby="about-title">
+      <div class="section-wrap about-grid">
+        <div class="about-copy">
+          <p class="eyebrow reveal">LAYER 02 · EMBEDDING</p>
+          <h2 id="about-title" class="split-heading reveal">Curious by default.<br><span class="accent">Rigorous</span> by training.</h2>
+          <p class="large-copy reveal">I'm Saad — a computer-science M.Sc. student at RPTU Kaiserslautern and former research assistant at DFKI, Germany's national AI research centre.</p>
+          <p class="reveal">My path runs from a bachelor's final-year project that became a published paper, through production face-recognition systems at Aletheia AI, to research on 3D human understanding today. What connects it all is a fascination with how machines <em>perceive</em> — and the discipline to make it work outside a notebook.</p>
+          <p class="reveal">Off the keyboard I've captained a departmental football team, organised university events, and raised funds for children's education. Good work, I've learned, is rarely a solo effort.</p>
+          <dl class="facts reveal">
+            <div><dt>Based in</dt><dd>Kaiserslautern, Germany</dd></div>
+            <div><dt>Focus</dt><dd>Computer vision · 3D humans · ML systems</dd></div>
+            <div><dt>Languages</dt><dd>English · Urdu · German (learning)</dd></div>
+            <div><dt>Open to</dt><dd>ML / CV engineering &amp; research roles</dd></div>
+          </dl>
+        </div>
+        <div class="about-visual reveal">
+          <div class="sphere-wrap" id="sphere-wrap" role="img" aria-label="Interactive 3D sphere of skills: Python, PyTorch, OpenCV, deep learning and more">
+            <div class="sphere" id="sphere"></div>
+            <div class="sphere-core" aria-hidden="true"></div>
+          </div>
+          <p class="sphere-hint">drag to rotate · skills embedded in ℝ³</p>
+          <div class="toolbox">
+            <h3>Toolkit</h3>
+            <div class="skill-tags">
+              <span>Python</span><span>PyTorch</span><span>TensorFlow</span><span>OpenCV</span><span>NumPy</span><span>Pandas</span><span>scikit-learn</span><span>OpenVINO</span><span>C / C++ / C#</span><span>JavaScript</span><span>React</span><span>Git</span><span>Linux</span><span>SQL</span><span>Android</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ░░ EXPERIENCE / TRAINING LOG ░░ -->
+    <section id="experience" class="section-wrap section-space" aria-labelledby="experience-title">
+      <div class="section-heading reveal">
+        <div>
+          <p class="eyebrow">LAYER 03 · TRAINING LOG</p>
+          <h2 id="experience-title" class="split-heading">Ten epochs of <span class="accent">learning</span></h2>
+        </div>
+        <p class="section-note">Every role is an epoch. The curve is my learning rate.<br>Hover or tap a point to read the log entry.</p>
+      </div>
+
+      <div class="train reveal">
+        <div class="train-chart" id="train-chart">
+          <svg viewBox="0 0 1000 360" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="g-area" x2="0" y2="1"><stop stop-color="#5ef2e0" stop-opacity=".28"/><stop offset="1" stop-color="#5ef2e0" stop-opacity="0"/></linearGradient>
+            </defs>
+            <g class="grid" stroke="rgba(255,255,255,.06)"><path d="M0 60h1000M0 130h1000M0 200h1000M0 270h1000M0 340h1000"/></g>
+            <path id="train-area" fill="url(#g-area)" d=""/>
+            <path id="train-line" fill="none" stroke="#5ef2e0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d=""/>
+            <path id="train-val" fill="none" stroke="#ff5c7a" stroke-width="1.5" stroke-dasharray="6 6" d=""/>
+          </svg>
+          <div class="train-points" id="train-points"></div>
+          <div class="train-legend"><span><i style="background:#5ef2e0"></i>loss (skills)</span><span><i style="background:#ff5c7a"></i>val_loss (impact)</span></div>
+          <div class="train-axis"><span>2016</span><span>2018</span><span>2020</span><span>2022</span><span>2024</span><span>2026</span></div>
+        </div>
+        <div class="train-log" id="train-log" aria-live="polite">
+          <div class="log-header"><span id="log-epoch">epoch 10/10</span><span id="log-date">Oct 2022 — Sep 2023</span></div>
+          <h3 id="log-title">Research Assistant — DFKI</h3>
+          <p id="log-body">Deutsches Forschungszentrum für Künstliche Intelligenz. Machine-learning pipelines, semantic datatype checking and dataset generation; built predictive models on large datasets to improve decision-making.</p>
+          <div class="tags" id="log-tags"><span>ML pipelines</span><span>Large datasets</span><span>Research</span></div>
+        </div>
+      </div>
+
+      <div class="journey">
+        <ol class="timeline" id="timeline">
+          <li class="tl-item reveal" data-epoch="9">
+            <span class="tl-date">OCT 2022 — SEP 2023</span>
+            <div><p class="company">DFKI <span>· German Research Center for Artificial Intelligence</span></p><h3>Research Assistant</h3><p>Machine-learning pipelines, semantic datatype checking and dataset generation. Worked with large datasets to build predictive models that enhanced decision-making processes.</p></div>
+          </li>
+          <li class="tl-item reveal" data-epoch="5">
+            <span class="tl-date">NOV 2020 — MAR 2022</span>
+            <div><p class="company">Aletheia AI</p><h3>Machine Learning Engineer</h3><p>Joined as a system-deployment intern; promoted within months to a full-time role in product development. Core contributor to the facial-recognition pipeline.</p></div>
+          </li>
+          <li class="tl-item reveal" data-epoch="6">
+            <span class="tl-date">DEC 2020 — FEB 2021</span>
+            <div><p class="company">Amal Academy <span>· Stanford-funded fellowship</span></p><h3>Career Prep Fellow</h3><p>Selected from 4,500+ applicants for a 150-hour programme in leadership, communication and problem-solving.</p></div>
+          </li>
+          <li class="tl-item reveal" data-epoch="3">
+            <span class="tl-date">2016 — 2020</span>
+            <div><p class="company">Early internships</p><h3>AI · Web · IT</h3><p>Digital Landscape (AI intern — built a face-recognition system), Interns Pakistan (front-end), Pakistan Civil Aviation Authority (ASP.NET) and Pakistan Television (IT).</p></div>
+          </li>
+        </ol>
+
+        <aside class="edu-card reveal">
+          <p class="eyebrow">ACADEMIC WEIGHTS</p>
+          <div class="edu">
+            <h3>M.Sc. Computer Science</h3>
+            <p>RPTU Rheinland-Pfälzische Technische Universität Kaiserslautern-Landau</p>
+            <span class="edu-date">2022 — 2026 · thesis in progress</span>
+          </div>
+          <hr>
+          <div class="edu">
+            <h3>B.Sc. Computer Science</h3>
+            <p>Usman Institute of Technology · affiliated with NED University of Engineering &amp; Technology</p>
+            <span class="edu-date">2016 — 2020 · <b>4th in department</b></span>
+          </div>
+          <hr>
+          <ul class="honors">
+            <li><b>2021</b> Paper published — KIET Journal of Computing &amp; Information Sciences (HEC 'Y')</li>
+            <li><b>2020</b> GitHub Arctic Code Vault contributor</li>
+            <li><b>2020</b> Amal Career Prep Fellowship (Stanford-funded)</li>
+          </ul>
+          <details class="certs">
+            <summary>Certifications <span>7</span></summary>
+            <ul>
+              <li>Neural Networks &amp; Deep Learning — Coursera</li>
+              <li>Improving Deep Neural Networks — Coursera</li>
+              <li>Intro to Front-end Development with ReactJS — Coursera</li>
+              <li>Machine Learning Crash Course — Google</li>
+              <li>Deep Learning with PyTorch: 60-Minute Blitz — PyTorch</li>
+              <li>AI Foundations: Machine Learning — LinkedIn</li>
+              <li>Introduction to Data Science — Cognitive Class</li>
+            </ul>
+          </details>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ░░ RÉSUMÉ / WEIGHTS ░░ -->
+    <section id="resume" class="section-wrap section-space resume-section" aria-labelledby="resume-title">
+      <div class="resume-card reveal">
+        <div class="resume-copy">
+          <p class="eyebrow">LAYER 04 · CHECKPOINT</p>
+          <h2 id="resume-title" class="split-heading">The <span class="accent">résumé</span>, exported.</h2>
+          <p>Three pages. Education, experience, projects, publications and certifications — the full checkpoint file.</p>
+          <div class="hero-actions">
+            <button class="button primary magnetic" type="button" id="resume-view" data-label="view cv"><span>View in page</span><i aria-hidden="true">▢</i></button>
+            <a class="button ghost magnetic" href="./Muhammad_Saad_Najib_CV.pdf" download="Muhammad_Saad_Najib_CV.pdf" data-label="download cv"><span>Download PDF</span><i aria-hidden="true">↓</i></a>
+          </div>
+          <code class="file-meta">Muhammad_Saad_Najib_CV.pdf · 194 KB · updated 2026</code>
+        </div>
+        <a class="resume-preview" href="./Muhammad_Saad_Najib_CV.pdf" target="_blank" rel="noopener" aria-label="Open résumé PDF in a new tab">
+          <div class="paper"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="paper p2"></div>
+          <div class="paper p3"></div>
+          <span class="paper-tag">PDF · 3 pages</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ░░ CONTACT / OUTPUT ░░ -->
+    <section id="contact" class="contact-section section-space" aria-labelledby="contact-title">
+      <div class="section-wrap">
+        <p class="eyebrow reveal"><span class="status-dot"></span>LAYER 05 · OUTPUT</p>
+        <h2 id="contact-title" class="contact-title split-heading reveal">Let's build something<br>that <span class="accent">sees</span>.</h2>
+        <div class="contact-grid">
+          <div class="terminal reveal" aria-label="Contact details">
+            <div class="term-bar"><i></i><i></i><i></i><span>saad@portfolio ~ % contact --all</span></div>
+            <pre id="terminal-out" class="term-out"></pre>
+          </div>
+          <ul class="contact-links reveal">
+            <li><span>Email</span><a href="mailto:saadnajib97@hotmail.com" data-label="email">saadnajib97@hotmail.com</a><button class="copy" type="button" data-copy="saadnajib97@hotmail.com" aria-label="Copy email">copy</button></li>
+            <li><span>Phone</span><a href="tel:+4915237641530" data-label="call">+49 152 3764 1530</a><button class="copy" type="button" data-copy="+4915237641530" aria-label="Copy phone number">copy</button></li>
+            <li><span>LinkedIn</span><a href="https://de.linkedin.com/in/muhammad-saad-najib" target="_blank" rel="noopener noreferrer" data-label="linkedin">/in/muhammad-saad-najib</a></li>
+            <li><span>GitHub</span><a href="https://github.com/saadnajib" target="_blank" rel="noopener noreferrer" data-label="github">@saadnajib</a></li>
+            <li><span>Location</span><em>Kaiserslautern, Germany · open to relocation</em></li>
+          </ul>
+        </div>
+        <a class="button primary magnetic contact-cta reveal" href="mailto:saadnajib97@hotmail.com?subject=Hello%20Saad" data-label="say hello"><span>Say hello</span><i aria-hidden="true">↗</i></a>
+      </div>
+    </section>
   </main>
-  <footer class="section-wrap"><a class="wordmark" href="#home">saad<span> / </span>najib<span class="brand-dot">.</span></a><p>© <span id="year">2026</span> Muhammad Saad Najib</p><a href="#home">BACK TO TOP ↑</a></footer>
+
+  <footer class="site-footer section-wrap">
+    <span class="wordmark-text">Muhammad Saad Najib</span>
+    <p>© <span id="year">2026</span> · Designed &amp; engineered as a self-inferring portfolio. No trackers, no cookies.</p>
+    <a href="#top" data-label="top">Back to input ↑</a>
+  </footer>
+
+  <!-- ░░ RÉSUMÉ VIEWER ░░ -->
+  <dialog class="viewer" id="resume-dialog" aria-label="Résumé viewer">
+    <div class="viewer-bar"><span>Muhammad_Saad_Najib_CV.pdf</span><div><a class="button ghost small" href="./Muhammad_Saad_Najib_CV.pdf" download="Muhammad_Saad_Najib_CV.pdf">Download</a><button class="button ghost small" type="button" id="resume-close">Close ✕</button></div></div>
+    <iframe id="resume-frame" title="Résumé PDF" loading="lazy"></iframe>
+  </dialog>
+
+  <!-- ░░ COMMAND PALETTE ░░ -->
+  <dialog class="palette" id="palette" aria-label="Command palette">
+    <div class="palette-input"><span aria-hidden="true">›</span><input id="palette-search" type="text" placeholder="Jump to… (try “resume”, “github”, “email”)" autocomplete="off" spellcheck="false"><kbd>esc</kbd></div>
+    <ul class="palette-list" id="palette-list" role="listbox">
+      <li role="option" data-action="#home"><span>00</span>Input · Home<kbd>section</kbd></li>
+      <li role="option" data-action="#work" data-keywords="projects portfolio"><span>01</span>Features · Work<kbd>section</kbd></li>
+      <li role="option" data-action="#about"><span>02</span>Embedding · About<kbd>section</kbd></li>
+      <li role="option" data-action="#experience" data-keywords="jobs career timeline education"><span>03</span>Training log · Experience<kbd>section</kbd></li>
+      <li role="option" data-action="#resume" data-keywords="resume cv curriculum"><span>04</span>Checkpoint · Résumé<kbd>section</kbd></li>
+      <li role="option" data-action="#contact"><span>05</span>Output · Contact<kbd>section</kbd></li>
+      <li role="option" data-action="./Muhammad_Saad_Najib_CV.pdf" data-new data-keywords="resume cv pdf download"><span>↓</span>Download résumé PDF<kbd>file</kbd></li>
+      <li role="option" data-action="https://github.com/saadnajib" data-new><span>↗</span>Open GitHub<kbd>link</kbd></li>
+      <li role="option" data-action="https://de.linkedin.com/in/muhammad-saad-najib" data-new><span>↗</span>Open LinkedIn<kbd>link</kbd></li>
+      <li role="option" data-action="mailto:saadnajib97@hotmail.com"><span>@</span>Email saadnajib97@hotmail.com<kbd>mail</kbd></li>
+      <li role="option" data-action="tel:+4915237641530"><span>☏</span>Call +49 152 3764 1530<kbd>tel</kbd></li>
+      <li role="option" data-action="toggle-motion"><span>⏯</span>Toggle motion<kbd>setting</kbd></li>
+    </ul>
+  </dialog>
 </body>
 </html>
