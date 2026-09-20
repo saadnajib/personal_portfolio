@@ -161,7 +161,7 @@ html.motion-paused .motion-toggle .ico-pause { display: none; }
 .eyebrow-live .sep { margin: 0 4px; }
 .eyebrow-live .role-type { color: var(--aqua); text-transform: none; letter-spacing: .04em; font-size: 12px; white-space: nowrap; }
 .caret { width: 7px; height: 12px; background: var(--aqua); display: inline-block; vertical-align: middle; animation: blink 1s steps(2) infinite; margin-left: 2px; }
-.hero-title { font-size: clamp(48px, 8vw, 128px); font-weight: 800; letter-spacing: -.045em; line-height: .9; margin: 0 0 30px; }
+.hero-title { font-family: 'Playfair Display', serif; font-size: clamp(48px, 8vw, 128px); font-weight: 800; letter-spacing: -.045em; line-height: .9; margin: 0 0 30px; }
 @supports (font-size: 1cqw) { .hero-title { font-size: clamp(48px, 15.5cqw, 128px); } }
 .hero-title .line-first { font-size: .46em; font-weight: 600; letter-spacing: .02em; color: var(--ink-2); line-height: 1.1; margin-bottom: .1em; }
 .hero-title .line { display: block; overflow: hidden; padding-bottom: .06em; }

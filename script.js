@@ -343,22 +343,11 @@
     railLinks.forEach(a => a.classList.toggle('active', a.dataset.rail === id));
   };
   const sectionObs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) setActive(e.target.id); }), { rootMargin: '-35% 0px -55% 0px' });
-  $$('main section[id]').forEach(s => sectionObs.observe(s));
-
-  /* ── Reveal + counters ──────────────────────────────────────── */
-  const revealObs = new IntersectionObserver(es => es.forEach(e => {
-    if (!e.isIntersecting) return;
-    e.target.classList.add('visible'); revealObs.unobserve(e.target);
-    $$('[data-count]', e.target).forEach(runCounter);
+  $$('main section[id]').forEach(s => sectionObs.observe(s));    /* ── Reveal + counters ──────────────────────────────────────── */   const revealObs = new IntersectionObserver(es => es.forEach(e => {     if (!e.isIntersecting) return;     e.target.classList.add('visible'); revealObs.unobserve(e.target);     $$
+('[data-count]', e.target).forEach(runCounter);
   }), { threshold: .12 });
-  $$('.reveal, .split-heading, .train, .hero-stats').forEach(el => revealObs.observe(el));
-  function runCounter(el) {
-    const end = Number(el.dataset.count), t0 = performance.now(), dur = state.paused ? 0 : 1400;
-    const step = t => { const k = dur ? clamp((t - t0) / dur, 0, 1) : 1; el.textContent = String(Math.round(end * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(step); };
-    requestAnimationFrame(step);
-  }
-  // stagger reveal delays inside grids
-  $$('.bento .card').forEach((c, i) => c.style.setProperty('--d', `${(i % 4) * .08}s`));
+  $$('.reveal, .split-heading, .train, .hero-stats').forEach(el => revealObs.observe(el));   function runCounter(el) {     const end = Number(el.dataset.count), t0 = performance.now(), dur = state.paused ? 0 : 1400;     const step = t => { const k = dur ? clamp((t - t0) / dur, 0, 1) : 1; el.textContent = String(Math.round(end * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(step); };     requestAnimationFrame(step);   }   // stagger reveal delays inside grids   $$
+('.bento .card').forEach((c, i) => c.style.setProperty('--d', `${(i % 4) * .08}s`));
 
   /* ── Colorization slider ────────────────────────────────────── */
   const slider = $('#color-slider'), grayRect = $('#gray-rect'), compare = $('#compare-line');
@@ -436,8 +425,8 @@
     log.classList.remove('swap'); void log.offsetWidth; log.classList.add('swap');
     logEls.epoch.textContent = `epoch ${i + 1}/${epochs.length} · loss ${e.loss.toFixed(2)}`; logEls.date.textContent = e.date; logEls.title.textContent = e.title; logEls.body.textContent = e.body;
     logEls.tags.innerHTML = e.tags.map(t => `<span>${t}</span>`).join('');
-    $$('.pt', pointsWrap).forEach((p, k) => p.classList.toggle('active', k === i));
-    $$('.tl-item').forEach(li => li.classList.toggle('active', Number(li.dataset.epoch) === i + 1));
+    $$('.pt', pointsWrap).forEach((p, k) => p.classList.toggle('active', k === i));$$
+('.tl-item').forEach(li => li.classList.toggle('active', Number(li.dataset.epoch) === i + 1));
   }
   epochs.forEach((e, i) => {
     const b = document.createElement('button'); b.type = 'button'; b.className = 'pt'; b.style.left = `${X(e.t) / 10}%`; b.style.top = `${Y(e.loss) / 360 * 100}%`; b.style.setProperty('--i', i);
@@ -503,7 +492,7 @@
     ['<span class="k">$</span> cat role.txt', 'ML / Computer Vision Engineer · M.Sc. CS @ RPTU'],
     ['<span class="k">$</span> contact --email', '<b>saadnajib97@hotmail.com</b>'],
     ['<span class="k">$</span> contact --phone', '<b>+49 152 3764 1530</b>'],
-    ['<span class="k">$</span> contact --social', 'github.com/saadnajib · linkedin.com/in/muhammad-saad-najib'],
+    ['<span class="k">$</span> contact --social', 'github.com/saadnajib · in/muhammad-saad-najib · ig: @saad__najib · fb: Muhammad Saad Najib'],
     ['<span class="k">$</span> status', '<b>open</b> to ML/CV roles · Kaiserslautern, DE'],
   ];
   let termStarted = false;
