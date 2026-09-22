@@ -3,10 +3,10 @@
    Palette: void / aqua / coral / violet / amber
    ═══════════════════════════════════════════════════════════════ */
 /* Self-hosted variable fonts (latin subset, SIL OFL — licences in fonts/) */
-@font-face { font-family: 'Archivo Variable'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('./fonts/archivo-latin-wght-normal.woff2') format('woff2-variations'), url('./fonts/archivo-latin-wght-normal.woff2') format('woff2'); }
-@font-face { font-family: 'Syne Variable'; font-style: normal; font-weight: 400 800; font-display: swap; src: url('./fonts/syne-latin-wght-normal.woff2') format('woff2-variations'), url('./fonts/syne-latin-wght-normal.woff2') format('woff2'); }
-@font-face { font-family: 'Space Grotesk Variable'; font-style: normal; font-weight: 300 700; font-display: swap; src: url('./fonts/space-grotesk-latin-wght-normal.woff2') format('woff2-variations'), url('./fonts/space-grotesk-latin-wght-normal.woff2') format('woff2'); }
-@font-face { font-family: 'JetBrains Mono Variable'; font-style: normal; font-weight: 100 800; font-display: swap; src: url('./fonts/jetbrains-mono-latin-wght-normal.woff2') format('woff2-variations'), url('./fonts/jetbrains-mono-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Archivo Variable'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('./assets/fonts/archivo-latin-wght-normal.woff2') format('woff2-variations'), url('./assets/fonts/archivo-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Syne Variable'; font-style: normal; font-weight: 400 800; font-display: swap; src: url('./assets/fonts/syne-latin-wght-normal.woff2') format('woff2-variations'), url('./assets/fonts/syne-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Space Grotesk Variable'; font-style: normal; font-weight: 300 700; font-display: swap; src: url('./assets/fonts/space-grotesk-latin-wght-normal.woff2') format('woff2-variations'), url('./assets/fonts/space-grotesk-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'JetBrains Mono Variable'; font-style: normal; font-weight: 100 800; font-display: swap; src: url('./assets/fonts/jetbrains-mono-latin-wght-normal.woff2') format('woff2-variations'), url('./assets/fonts/jetbrains-mono-latin-wght-normal.woff2') format('woff2'); }
 :root {
   --bg: #05070b;
   --bg-2: #0a0e16;
