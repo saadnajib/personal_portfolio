@@ -1,0 +1,11 @@
+{
+  // Cloudflare Workers config: deploy the built site as static assets.
+  // An explicit config stops `wrangler deploy` from trying to
+  // auto-configure the project as a Vite framework app.
+  "name": "personal-portfolio",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  }
+}

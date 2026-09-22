@@ -37,9 +37,13 @@ No trackers, no third-party requests — fonts are self-hosted.
 push to `main`. If the first run fails on the Pages step, set repo → Settings → Pages →
 Source to **GitHub Actions** once.
 
-### Cloudflare Pages / Netlify
-Build command `npm run build`, output directory `dist`. The `_headers` file is copied into
-the build output automatically.
+### Cloudflare Workers
+`wrangler.jsonc` deploys `dist/` as static assets: build command `npm run build`, deploy
+command `npx wrangler deploy`. The `_headers` file is copied into the build output
+automatically and applied by Workers static assets.
+
+### Netlify
+Build command `npm run build`, output directory `dist`.
 
 ## Editing content
 - Name / roles / intro: `src/components/Hero.jsx`; role typewriter list in `src/lib/effects.js` (`roles`).
