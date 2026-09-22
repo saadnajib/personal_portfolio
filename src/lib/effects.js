@@ -1,9 +1,14 @@
-'use strict';
 /* ═══════════════════════════════════════════════════════════════
    Muhammad Saad Najib — self-inferring portfolio
    All effects are procedural and run locally. No tracking.
+   Ported from the original script.js into a module that React
+   calls once after the page has mounted.
    ═══════════════════════════════════════════════════════════════ */
-(() => {
+let initialized = false;
+
+export function initPortfolio() {
+  if (initialized) return;
+  initialized = true;
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const html = document.documentElement;
@@ -555,4 +560,4 @@
   /* ── Go ─────────────────────────────────────────────────────── */
   syncMotion(false);
   runBoot();
-})();
+}
