@@ -1,12 +1,20 @@
+import { useLang } from '../i18n.jsx';
+
+const Tags = ({ tags }) => tags ? (
+  <div className="tags">{tags.map(tag => <span key={tag}>{tag}</span>)}</div>
+) : null;
+
 export default function Work() {
+  const { t } = useLang();
+  const c = t.work.cards;
   return (
     <section id="work" className="section-wrap section-space" aria-labelledby="work-title">
       <div className="section-heading reveal">
         <div>
           <p className="eyebrow">LAYER 01 · FEATURE EXTRACTION</p>
-          <h2 id="work-title" className="split-heading">Selected <span className="accent">work</span></h2>
+          <h2 id="work-title" className="split-heading">{t.work.heading0}<span className="accent">{t.work.headingAccent}</span></h2>
         </div>
-        <p className="section-note">Ten activations from the last six years.<br />Hover a card to inspect it. Every visual is generated live — no images.</p>
+        <p className="section-note">{t.work.note0}<br />{t.work.note1}</p>
       </div>
 
       <div className="bento">
@@ -30,15 +38,15 @@ export default function Work() {
               <g clipPath="url(#clip-gray)" filter="url(#f-gray)"><use href="#scene" /></g>
             </svg>
             <div className="compare-line" id="compare-line"><span>⇆</span></div>
-            <label className="sr-only" htmlFor="color-slider">Compare grayscale and colorized</label>
-            <input type="range" id="color-slider" min="0" max="100" defaultValue="50" aria-valuetext="50 percent" />
+            <label className="sr-only" htmlFor="color-slider">{t.work.sliderLabel}</label>
+            <input type="range" id="color-slider" min="0" max="100" defaultValue="50" aria-valuetext="50%" />
             <span className="chip l">L · grayscale</span><span className="chip r">ab · predicted</span>
           </div>
           <div className="card-body">
-            <div className="card-meta"><span>01 / PUBLISHED RESEARCH</span><span>CNN · GAN · PyTorch</span></div>
-            <a className="card-title" href="https://kjcis.kiet.edu.pk/index.php/kjcis/article/view/159/73" target="_blank" rel="noopener noreferrer"><h3>Automatic image colorization</h3><i aria-hidden="true">↗</i></a>
-            <p>A CNN that learns L→ab colour mappings, later extended with a GAN and served as an API. Published in the KIET Journal of Computing &amp; Information Sciences (2021).</p>
-            <div className="tags"><span>Deep learning</span><span>Generative</span><span>Paper</span></div>
+            <div className="card-meta"><span>{c[0].meta}</span><span>CNN · GAN · PyTorch</span></div>
+            <a className="card-title" href="https://kjcis.kiet.edu.pk/index.php/kjcis/article/view/159/73" target="_blank" rel="noopener noreferrer"><h3>{c[0].title}</h3><i aria-hidden="true">↗</i></a>
+            <p>{c[0].desc}</p>
+            <Tags tags={c[0].tags} />
           </div>
         </article>
 
@@ -56,10 +64,10 @@ export default function Work() {
             <code className="art-code">face → 512-d embedding<br />cos(θ) = 0.91 ✓ match</code>
           </div>
           <div className="card-body">
-            <div className="card-meta"><span>02 / PRODUCTION PIPELINE</span><span>FaceNet · ArcFace · OpenVINO</span></div>
-            <a className="card-title" href="https://github.com/saadnajib/facenet-implementation-2" target="_blank" rel="noopener noreferrer"><h3>Face recognition pipeline</h3><i aria-hidden="true">↗</i></a>
-            <p>Detection, alignment, embedding and matching — FaceNet, ArcFace &amp; CosFace inference plus RetinaFace on OpenVINO, built for Aletheia AI's product.</p>
-            <div className="tags"><span>Embeddings</span><span>Edge inference</span></div>
+            <div className="card-meta"><span>{c[1].meta}</span><span>FaceNet · ArcFace · OpenVINO</span></div>
+            <a className="card-title" href="https://github.com/saadnajib/facenet-implementation-2" target="_blank" rel="noopener noreferrer"><h3>{c[1].title}</h3><i aria-hidden="true">↗</i></a>
+            <p>{c[1].desc}</p>
+            <Tags tags={c[1].tags} />
           </div>
         </article>
 
@@ -75,10 +83,10 @@ export default function Work() {
             <code className="art-code">θ ∈ ℝ^(J×3) · β ∈ ℝ^11</code>
           </div>
           <div className="card-body">
-            <div className="card-meta"><span>03 / M.SC. THESIS · ONGOING</span><span>RPTU · PyTorch</span></div>
-            <a className="card-title" href="https://github.com/saadnajib/Master_Thesis" target="_blank" rel="noopener noreferrer"><h3>3D human mesh recovery</h3><i aria-hidden="true">↗</i></a>
-            <p>Estimating 3D human pose and body shape from single images — adapting large-scale datasets to a new parametric body model and training multi-person recovery networks.</p>
-            <div className="tags"><span>3D vision</span><span>Body models</span><span>Datasets</span></div>
+            <div className="card-meta"><span>{c[2].meta}</span><span>RPTU · PyTorch</span></div>
+            <a className="card-title" href="https://github.com/saadnajib/Master_Thesis" target="_blank" rel="noopener noreferrer"><h3>{c[2].title}</h3><i aria-hidden="true">↗</i></a>
+            <p>{c[2].desc}</p>
+            <Tags tags={c[2].tags} />
           </div>
         </article>
 
@@ -89,46 +97,46 @@ export default function Work() {
             <code className="art-code">POST /colorize · 200 OK · G(z | L) → ab</code>
           </div>
           <div className="card-body">
-            <div className="card-meta"><span>04 / GENERATIVE · API</span><span>GAN · TensorFlow · Keras</span></div>
-            <a className="card-title" href="https://github.com/saadnajib/GAN-Image-colorization-API-master" target="_blank" rel="noopener noreferrer"><h3>GAN image-colorization API</h3><i aria-hidden="true">↗</i></a>
-            <p>The published CNN, extended with a conditional GAN generator and served over an API. Separate generators trained for general scenes, coastlines and people, so grayscale input picks the domain expert.</p>
-            <div className="tags"><span>GANs</span><span>Model serving</span><span>Notebooks</span></div>
+            <div className="card-meta"><span>{c[3].meta}</span><span>GAN · TensorFlow · Keras</span></div>
+            <a className="card-title" href="https://github.com/saadnajib/GAN-Image-colorization-API-master" target="_blank" rel="noopener noreferrer"><h3>{c[3].title}</h3><i aria-hidden="true">↗</i></a>
+            <p>{c[3].desc}</p>
+            <Tags tags={c[3].tags} />
           </div>
         </article>
 
         <article className="card card-sm tilt reveal" data-label="grasp synthesis">
           <div className="card-art art-grasp" aria-hidden="true"><div className="hand"><i></i><i></i><i></i><i></i><i></i></div><code className="art-code">strain-aware ✓</code></div>
           <div className="card-body">
-            <div className="card-meta"><span>05 / RESEARCH</span></div>
-            <a className="card-title" href="https://github.com/saadnajib/Egocentric-Grasp-Synthesis-using-Contextual-Reasoning-for-Strain-Aware" target="_blank" rel="noopener noreferrer"><h3>Egocentric grasp synthesis</h3><i aria-hidden="true">↗</i></a>
-            <p>Contextual reasoning for strain-aware hand–object grasps from a first-person view.</p>
+            <div className="card-meta"><span>{c[4].meta}</span></div>
+            <a className="card-title" href="https://github.com/saadnajib/Egocentric-Grasp-Synthesis-using-Contextual-Reasoning-for-Strain-Aware" target="_blank" rel="noopener noreferrer"><h3>{c[4].title}</h3><i aria-hidden="true">↗</i></a>
+            <p>{c[4].desc}</p>
           </div>
         </article>
 
         <article className="card card-sm tilt reveal" data-label="head pose">
           <div className="card-art art-pose" aria-hidden="true"><div className="gyro"><i></i><i></i><i></i></div><code className="art-code">yaw · pitch · roll</code></div>
           <div className="card-body">
-            <div className="card-meta"><span>06 / MOBILE</span></div>
-            <a className="card-title" href="https://github.com/saadnajib/Head-Pose-Android-App" target="_blank" rel="noopener noreferrer"><h3>Head-pose Android app</h3><i aria-hidden="true">↗</i></a>
-            <p>On-device head-pose estimation with threshold-triggered capture.</p>
+            <div className="card-meta"><span>{c[5].meta}</span></div>
+            <a className="card-title" href="https://github.com/saadnajib/Head-Pose-Android-App" target="_blank" rel="noopener noreferrer"><h3>{c[5].title}</h3><i aria-hidden="true">↗</i></a>
+            <p>{c[5].desc}</p>
           </div>
         </article>
 
         <article className="card card-sm tilt reveal" data-label="opencv">
           <div className="card-art art-pixels" aria-hidden="true"><div className="pixels" id="pixels"></div><code className="art-code">see · detect · understand</code></div>
           <div className="card-body">
-            <div className="card-meta"><span>07 / EXPERIMENTS</span></div>
-            <a className="card-title" href="https://github.com/saadnajib/OpenCv" target="_blank" rel="noopener noreferrer"><h3>OpenCV &amp; image processing</h3><i aria-hidden="true">↗</i></a>
-            <p>Filters, Haar cascades, LBPH recognition and feature extraction — the fundamentals, by hand.</p>
+            <div className="card-meta"><span>{c[6].meta}</span></div>
+            <a className="card-title" href="https://github.com/saadnajib/OpenCv" target="_blank" rel="noopener noreferrer"><h3>{c[6].title}</h3><i aria-hidden="true">↗</i></a>
+            <p>{c[6].desc}</p>
           </div>
         </article>
 
         <article className="card card-sm tilt reveal" data-label="cifar-10">
           <div className="card-art art-classes" aria-hidden="true"><div className="bars"><i style={{ '--h': '.92' }}></i><i style={{ '--h': '.31' }}></i><i style={{ '--h': '.58' }}></i><i style={{ '--h': '.2' }}></i><i style={{ '--h': '.75' }}></i><i style={{ '--h': '.44' }}></i><i style={{ '--h': '.12' }}></i><i style={{ '--h': '.66' }}></i><i style={{ '--h': '.38' }}></i><i style={{ '--h': '.5' }}></i></div><code className="art-code">softmax · 10 classes</code></div>
           <div className="card-body">
-            <div className="card-meta"><span>08 / CLASSIFICATION</span></div>
-            <a className="card-title" href="https://github.com/saadnajib/Artificial-intelligence" target="_blank" rel="noopener noreferrer"><h3>CIFAR-10 classifier</h3><i aria-hidden="true">↗</i></a>
-            <p>A convolutional classifier across ten object classes — my first end-to-end training loop.</p>
+            <div className="card-meta"><span>{c[7].meta}</span></div>
+            <a className="card-title" href="https://github.com/saadnajib/Artificial-intelligence" target="_blank" rel="noopener noreferrer"><h3>{c[7].title}</h3><i aria-hidden="true">↗</i></a>
+            <p>{c[7].desc}</p>
           </div>
         </article>
 
@@ -146,10 +154,10 @@ export default function Work() {
             <code className="art-code">EMA20 · RSI14 · vol ×1.5 → TP +4% / SL −2%</code>
           </div>
           <div className="card-body">
-            <div className="card-meta"><span>09 / SYSTEMS</span><span>Python · ccxt · pandas</span></div>
-            <a className="card-title" href="https://github.com/saadnajib/trading_bot_v2" target="_blank" rel="noopener noreferrer"><h3>Momentum-breakout trading bot</h3><i aria-hidden="true">↗</i></a>
-            <p>Testnet-first crypto bot on 15-minute candles: EMA/RSI/volume entries, hard risk rails (2% risk cap, 20% notional cap, daily kill switch), exchange-side stops with software fallback, retry layer and fee-aware PnL journaling.</p>
-            <div className="tags"><span>Risk engine</span><span>Live systems</span><span>Testnet</span></div>
+            <div className="card-meta"><span>{c[8].meta}</span><span>Python · ccxt · pandas</span></div>
+            <a className="card-title" href="https://github.com/saadnajib/trading_bot_v2" target="_blank" rel="noopener noreferrer"><h3>{c[8].title}</h3><i aria-hidden="true">↗</i></a>
+            <p>{c[8].desc}</p>
+            <Tags tags={c[8].tags} />
           </div>
         </article>
 
@@ -163,15 +171,15 @@ export default function Work() {
             <code className="art-code">upload → frames → annotate → split → train</code>
           </div>
           <div className="card-body">
-            <div className="card-meta"><span>10 / TOOLING · MINDGARAGE</span><span>Flask · OpenCV · MMDetection</span></div>
-            <a className="card-title" href="https://github.com/saadnajib/Mindgarage_Roboflow_app" target="_blank" rel="noopener noreferrer"><h3>In-house Roboflow-style annotation app</h3><i aria-hidden="true">↗</i></a>
-            <p>A self-hosted dataset tool for the MindGarage lab: upload images or videos, extract frames, draw boxes in the browser, split train/test/validation and launch MMDetection training, all from one Flask app.</p>
-            <div className="tags"><span>Data tooling</span><span>Detection</span><span>Web app</span></div>
+            <div className="card-meta"><span>{c[9].meta}</span><span>Flask · OpenCV · MMDetection</span></div>
+            <a className="card-title" href="https://github.com/saadnajib/Mindgarage_Roboflow_app" target="_blank" rel="noopener noreferrer"><h3>{c[9].title}</h3><i aria-hidden="true">↗</i></a>
+            <p>{c[9].desc}</p>
+            <Tags tags={c[9].tags} />
           </div>
         </article>
       </div>
 
-      <a className="all-projects reveal magnetic" href="https://github.com/saadnajib" target="_blank" rel="noopener noreferrer" data-label="github"><span>25+ repositories · Arctic Code Vault contributor</span><strong>Open GitHub <i aria-hidden="true">↗</i></strong></a>
+      <a className="all-projects reveal magnetic" href="https://github.com/saadnajib" target="_blank" rel="noopener noreferrer" data-label="github"><span>{t.work.allProjects}</span><strong>{t.work.openGithub} <i aria-hidden="true">↗</i></strong></a>
     </section>
   );
 }

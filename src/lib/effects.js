@@ -1,14 +1,22 @@
 /* ═══════════════════════════════════════════════════════════════
    Muhammad Saad Najib — self-inferring portfolio
    All effects are procedural and run locally. No tracking.
-   Ported from the original script.js into a module that React
-   calls once after the page has mounted.
+   Ported from the original script.js into a module that React runs
+   after mount. Re-initializable: language switches remount the page
+   and call initPortfolio again, so every persistent listener, timer,
+   frame and observer is registered for cleanup.
    ═══════════════════════════════════════════════════════════════ */
-let initialized = false;
+let activeCleanup = null;
+let userPaused = null; // survives language-switch re-inits
 
-export function initPortfolio() {
-  if (initialized) return;
-  initialized = true;
+export function initPortfolio(strings) {
+  if (activeCleanup) { activeCleanup(); activeCleanup = null; }
+  const disposers = [];
+  let disposed = false;
+  const on = (target, ev, fn, opts) => { target.addEventListener(ev, fn, opts); disposers.push(() => target.removeEventListener(ev, fn, opts)); };
+  const every = (fn, ms) => { const id = setInterval(fn, ms); disposers.push(() => clearInterval(id)); return id; };
+  const watch = obs => { disposers.push(() => obs.disconnect()); return obs; };
+
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const html = document.documentElement;
@@ -16,7 +24,7 @@ export function initPortfolio() {
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const finePointer = matchMedia('(hover:hover) and (pointer:fine)');
   const reduceQuery = matchMedia('(prefers-reduced-motion: reduce)');
-  const state = { paused: reduceQuery.matches, scrollY: 0, progress: 0, mouse: { x: innerWidth / 2, y: innerHeight / 2 } };
+  const state = { paused: userPaused ?? reduceQuery.matches, scrollY: 0, progress: 0, mouse: { x: innerWidth / 2, y: innerHeight / 2 } };
   html.classList.remove('no-js');
 
   /* ── Motion control ─────────────────────────────────────────── */
@@ -26,11 +34,11 @@ export function initPortfolio() {
     if (fromUser) html.classList.add('motion-user');
     html.classList.toggle('motion-paused', state.paused);
     motionBtn.setAttribute('aria-pressed', String(state.paused));
-    motionBtn.setAttribute('aria-label', state.paused ? 'Play visual effects' : 'Pause visual effects');
+    motionBtn.setAttribute('aria-label', state.paused ? strings.aria.play : strings.aria.pause);
     loops.forEach(fn => fn(state.paused));
   }
-  motionBtn.addEventListener('click', () => { state.paused = !state.paused; syncMotion(true); });
-  reduceQuery.addEventListener('change', () => { if (!html.classList.contains('motion-user')) { state.paused = reduceQuery.matches; syncMotion(false); } });
+  motionBtn.addEventListener('click', () => { state.paused = !state.paused; userPaused = state.paused; syncMotion(true); });
+  on(reduceQuery, 'change', () => { if (!html.classList.contains('motion-user')) { state.paused = reduceQuery.matches; syncMotion(false); } });
 
   /* ── Boot sequence ──────────────────────────────────────────── */
   const boot = $('#boot');
@@ -40,16 +48,17 @@ export function initPortfolio() {
     document.body.classList.add('locked');
     const items = $$('#boot-log li'), bar = $('#boot-bar'), pct = $('#boot-pct');
     let p = 0;
-    const tick = setInterval(() => {
+    const tick = every(() => {
       p = Math.min(100, p + Math.random() * 16 + 12);
       bar.style.width = p + '%'; pct.textContent = Math.round(p) + '%';
       items.forEach((li, i) => { if (p >= (i + 1) * 18) li.classList.add('on'); });
       if (p >= 100) {
         clearInterval(tick);
         setTimeout(() => {
+          if (disposed) return;
           boot.classList.add('done'); document.body.classList.remove('locked');
           try { sessionStorage.setItem('booted', '1'); } catch (e) {}
-          setTimeout(() => { html.classList.add('ready'); startPortrait(); }, 120);
+          setTimeout(() => { if (disposed) return; html.classList.add('ready'); startPortrait(); }, 120);
         }, 160);
       }
     }, 70);
@@ -81,10 +90,11 @@ export function initPortfolio() {
   });
 
   /* ── Role typewriter ────────────────────────────────────────── */
-  const roles = ['machine learning engineer', 'computer vision researcher', 'deep learning practitioner', 'm.sc. computer science @ rptu', 'ex-dfki research assistant'];
+  const roles = strings.roles;
   const roleEl = $('#role-type');
   let ri = 0, rc = roles[0].length, dir = -1, roleTimer;
   function typeRole() {
+    if (disposed) return;
     if (state.paused) { roleEl.textContent = roles[0]; return; }
     rc += dir;
     roleEl.textContent = roles[ri].slice(0, rc);
@@ -94,13 +104,14 @@ export function initPortfolio() {
     roleTimer = setTimeout(typeRole, wait);
   }
   setTimeout(typeRole, 2600);
+  disposers.push(() => clearTimeout(roleTimer));
   loops.add(p => { clearTimeout(roleTimer); if (!p) roleTimer = setTimeout(typeRole, 800); else roleEl.textContent = roles[0]; });
 
   /* ── Clock (Kaiserslautern) ─────────────────────────────────── */
   const clockEl = $('#clock-time');
   const fmt = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Berlin' });
   const setClock = () => { clockEl.textContent = fmt.format(new Date()); };
-  setClock(); setInterval(setClock, 15000);
+  setClock(); every(setClock, 15000);
   $('#year').textContent = String(new Date().getFullYear());
 
   /* ── Portrait viewfinder ────────────────────────────────────── */
@@ -208,7 +219,7 @@ export function initPortfolio() {
   }
   function portraitLoop(t) {
     portraitFrame = 0;
-    if (!layers) return;
+    if (disposed || !layers) return;
     if (colorStart && colorT < 1) colorT = clamp((t - colorStart) / 2600, 0, 1);
     if (colorT >= 1 && !vfBox.classList.contains('on')) { vfBox.classList.add('on'); hudMode.textContent = 'MODE · INFERENCE'; }
     lens.x = lerp(lens.x < 0 ? lens.tx : lens.x, lens.tx, .18); lens.y = lerp(lens.y < 0 ? lens.ty : lens.y, lens.ty, .18); lens.r = lerp(lens.r, lens.tr, .14);
@@ -221,6 +232,7 @@ export function initPortfolio() {
   function startPortrait() {
     if (portraitReady) return; portraitReady = true;
     const go = () => {
+      if (disposed) return;
       buildLayers();
       if (!layers) { html.classList.add('no-canvas'); return; }
       if (state.paused) { colorT = 1; vfBox.classList.add('on'); hudMode.textContent = 'MODE · INFERENCE'; drawPortrait(); return; }
@@ -239,14 +251,17 @@ export function initPortfolio() {
   vfFrame.addEventListener('click', () => { if (!finePointer.matches) cycleMode(); });
   function cycleMode() { modeIdx = (modeIdx + 1) % modes.length; vfModeBtn.innerHTML = `lens: <b>${modes[modeIdx]}</b>`; hudMode.textContent = 'LENS · ' + modeLabels[modes[modeIdx]]; kickPortrait(); }
   vfModeBtn.addEventListener('click', cycleMode);
-  new ResizeObserver(() => { if (portraitReady && pImg.naturalWidth) { buildLayers(); drawPortrait(); } }).observe(vfFrame);
+  watch(new ResizeObserver(() => { if (portraitReady && pImg.naturalWidth) { buildLayers(); drawPortrait(); } })).observe(vfFrame);
   loops.add(p => { if (p) { colorT = 1; drawPortrait(); } else kickPortrait(); });
+  disposers.push(() => cancelAnimationFrame(portraitFrame));
 
   /* ── Ambient particle field ─────────────────────────────────── */
   const field = $('#field'), fctx = field.getContext('2d');
   const lightField = matchMedia('(max-width: 820px), (pointer: coarse)');
   let fw = 0, fh = 0, particles = [], fieldFrame = 0, fieldTime = 0, lastField = 0;
-  const colors = ['94,242,224', '124,92,255', '255,92,122', '255,180,84'];
+  const darkColors = ['94,242,224', '124,92,255', '255,92,122', '255,180,84'];
+  const lightColors = ['13,148,136', '98,71,224', '217,41,85', '178,106,0'];
+  const fieldColors = () => html.dataset.theme === 'light' ? lightColors : darkColors;
   function resizeField() {
     const dpr = Math.min(devicePixelRatio || 1, 1.25);
     const sameWidth = innerWidth === fw && Math.abs(innerHeight - fh) < 200;
@@ -258,12 +273,13 @@ export function initPortfolio() {
   const noise = (x, y, t) => Math.sin(x * .0021 + t) * Math.cos(y * .0017 - t * .7) + Math.sin((x + y) * .0009 + t * .5);
   function fieldLoop(t) {
     fieldFrame = 0;
-    if (state.paused || document.hidden || !particles.length) return;
+    if (disposed || state.paused || document.hidden || !particles.length) return;
     fieldFrame = requestAnimationFrame(fieldLoop);
     if (t - lastField < 32) return; // ~30 fps is plenty for an ambient layer
     lastField = t;
     fieldTime = t * .00012;
     fctx.clearRect(0, 0, fw, fh);
+    const colors = fieldColors();
     const mx = state.mouse.x, my = state.mouse.y, shift = Math.floor(state.progress * 3);
     for (const p of particles) {
       const a = noise(p.x, p.y, fieldTime) * Math.PI;
@@ -289,26 +305,28 @@ export function initPortfolio() {
     dots.forEach((d, k) => { fctx.fillStyle = `rgba(${colors[k]},.75)`; fctx.fill(d); });
   }
   function kickField() { if (!fieldFrame && !state.paused && !document.hidden && particles.length) fieldFrame = requestAnimationFrame(fieldLoop); }
-  resizeField(); addEventListener('resize', resizeField); kickField();
-  lightField.addEventListener('change', () => { fw = 0; resizeField(); kickField(); });
-  document.addEventListener('visibilitychange', kickField);
+  resizeField(); on(window, 'resize', resizeField); kickField();
+  on(lightField, 'change', () => { fw = 0; resizeField(); kickField(); });
+  on(document, 'visibilitychange', kickField);
   loops.add(p => { if (p) { cancelAnimationFrame(fieldFrame); fieldFrame = 0; fctx.clearRect(0, 0, fw, fh); } else kickField(); });
+  disposers.push(() => cancelAnimationFrame(fieldFrame));
 
   /* ── Custom cursor ──────────────────────────────────────────── */
   const cursor = $('#cursor'), cLabel = $('#cursor-label'), cCoord = $('#cursor-coord');
   let cx = state.mouse.x, cy = state.mouse.y, cursorFrame = 0;
   function cursorLoop() {
     cursorFrame = 0;
+    if (disposed) return;
     cx = lerp(cx, state.mouse.x, .35); cy = lerp(cy, state.mouse.y, .35);
     cursor.style.transform = `translate(${cx}px,${cy}px)`;
     if (Math.abs(cx - state.mouse.x) > .2 || Math.abs(cy - state.mouse.y) > .2) cursorFrame = requestAnimationFrame(cursorLoop);
   }
   function enableCursor() {
-    const on = finePointer.matches && !state.paused;
-    document.body.classList.toggle('has-cursor', on);
+    const on_ = finePointer.matches && !state.paused;
+    document.body.classList.toggle('has-cursor', on_);
   }
-  enableCursor(); finePointer.addEventListener('change', enableCursor); loops.add(enableCursor);
-  addEventListener('pointermove', e => {
+  enableCursor(); on(finePointer, 'change', enableCursor); loops.add(enableCursor);
+  on(window, 'pointermove', e => {
     if (e.pointerType === 'touch') return;
     state.mouse.x = e.clientX; state.mouse.y = e.clientY;
     if (document.body.classList.contains('has-cursor')) {
@@ -319,7 +337,9 @@ export function initPortfolio() {
       if (hot) { const lbl = hot.dataset.label || hot.getAttribute('aria-label') || hot.textContent.trim().slice(0, 22) || 'interact'; cLabel.textContent = `${lbl} · ${(0.9 + Math.random() * .099).toFixed(3)}`; }
     }
   }, { passive: true });
-  addEventListener('pointerdown', () => cursor.classList.add('down')); addEventListener('pointerup', () => cursor.classList.remove('down'));
+  on(window, 'pointerdown', () => cursor.classList.add('down'));
+  on(window, 'pointerup', () => cursor.classList.remove('down'));
+  disposers.push(() => cancelAnimationFrame(cursorFrame));
 
   /* ── Magnetic buttons + card tilt/sheen ─────────────────────── */
   $$('.magnetic').forEach(el => {
@@ -346,48 +366,50 @@ export function initPortfolio() {
   let scrollPending = false;
   function onScroll() {
     scrollPending = false;
+    if (disposed) return;
     const max = html.scrollHeight - innerHeight;
     state.progress = max > 0 ? clamp(scrollY / max, 0, 1) : 0;
     progressBar.style.transform = `scaleX(${state.progress})`;
     if (timeline) { const r = timeline.getBoundingClientRect(); const f = clamp((innerHeight * .7 - r.top) / r.height, 0, 1); timeline.style.setProperty('--fill', `${f * 100}%`); }
   }
-  addEventListener('scroll', () => { if (!scrollPending) { scrollPending = true; requestAnimationFrame(onScroll); } }, { passive: true });
+  on(window, 'scroll', () => { if (!scrollPending) { scrollPending = true; requestAnimationFrame(onScroll); } }, { passive: true });
   onScroll();
   const navLinks = $$('#navigation a'), railLinks = $$('.rail a');
   const setActive = id => {
-    navLinks.forEach(a => { const on = a.hash === '#' + id; a.classList.toggle('active', on); on ? a.setAttribute('aria-current', 'location') : a.removeAttribute('aria-current'); });
+    navLinks.forEach(a => { const on_ = a.hash === '#' + id; a.classList.toggle('active', on_); on_ ? a.setAttribute('aria-current', 'location') : a.removeAttribute('aria-current'); });
     railLinks.forEach(a => a.classList.toggle('active', a.dataset.rail === id));
   };
-  const sectionObs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) setActive(e.target.id); }), { rootMargin: '-35% 0px -55% 0px' });
+  const sectionObs = watch(new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) setActive(e.target.id); }), { rootMargin: '-35% 0px -55% 0px' }));
   $$('main section[id]').forEach(s => sectionObs.observe(s));
 
   /* ── Reveal + counters ──────────────────────────────────────── */
-  const revealObs = new IntersectionObserver(es => es.forEach(e => {
+  const revealObs = watch(new IntersectionObserver(es => es.forEach(e => {
     if (!e.isIntersecting) return;
     e.target.classList.add('visible'); revealObs.unobserve(e.target);
     $$('[data-count]', e.target).forEach(runCounter);
-  }), { threshold: .12 });
+  }), { threshold: .12 }));
   $$('.reveal, .split-heading, .train, .hero-stats').forEach(el => revealObs.observe(el));
   function runCounter(el) {
     const end = Number(el.dataset.count), t0 = performance.now(), dur = state.paused ? 0 : 1400;
-    const step = t => { const k = dur ? clamp((t - t0) / dur, 0, 1) : 1; el.textContent = String(Math.round(end * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(step); };
+    const step = t => { if (disposed) return; const k = dur ? clamp((t - t0) / dur, 0, 1) : 1; el.textContent = String(Math.round(end * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(step); };
     requestAnimationFrame(step);
   }
   // stagger reveal delays inside grids
   $$('.bento .card').forEach((c, i) => c.style.setProperty('--d', `${(i % 4) * .08}s`));
 
   // pause looping art while it is off-screen (keeps the main thread free while scrolling)
-  const offObs = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('is-off', !e.isIntersecting)), { rootMargin: '80px 0px' });
+  const offObs = watch(new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('is-off', !e.isIntersecting)), { rootMargin: '80px 0px' }));
   $$('.card-art, .resume-card, .sphere-wrap, .hero-visual, .ticker').forEach(el => offObs.observe(el));
 
   /* ── Colorization slider ────────────────────────────────────── */
   const slider = $('#color-slider'), grayRect = $('#gray-rect'), compare = $('#compare-line');
-  const updateCompare = () => { const v = Number(slider.value); grayRect.setAttribute('width', String(600 * v / 100)); compare.style.left = v + '%'; slider.setAttribute('aria-valuetext', `${v} percent grayscale`); };
+  const updateCompare = () => { const v = Number(slider.value); grayRect.setAttribute('width', String(600 * v / 100)); compare.style.left = v + '%'; slider.setAttribute('aria-valuetext', `${v}%`); };
   slider.addEventListener('input', updateCompare); updateCompare();
   let sliderAuto = 0;
-  const autoSlide = t => { sliderAuto = 0; if (state.paused || slider.matches(':active')) return; slider.value = String(50 + Math.sin(t * .0009) * 38); updateCompare(); sliderAuto = requestAnimationFrame(autoSlide); };
-  new IntersectionObserver(es => { if (es[0].isIntersecting && !sliderAuto && !state.paused) sliderAuto = requestAnimationFrame(autoSlide); else if (!es[0].isIntersecting) { cancelAnimationFrame(sliderAuto); sliderAuto = 0; } }).observe(slider);
+  const autoSlide = t => { sliderAuto = 0; if (disposed || state.paused || slider.matches(':active')) return; slider.value = String(50 + Math.sin(t * .0009) * 38); updateCompare(); sliderAuto = requestAnimationFrame(autoSlide); };
+  watch(new IntersectionObserver(es => { if (es[0].isIntersecting && !sliderAuto && !state.paused) sliderAuto = requestAnimationFrame(autoSlide); else if (!es[0].isIntersecting) { cancelAnimationFrame(sliderAuto); sliderAuto = 0; } })).observe(slider);
   slider.addEventListener('pointerdown', () => { cancelAnimationFrame(sliderAuto); sliderAuto = 0; });
+  disposers.push(() => cancelAnimationFrame(sliderAuto));
 
   /* ── Pixel grid art ─────────────────────────────────────────── */
   const pixels = $('#pixels');
@@ -415,31 +437,34 @@ export function initPortfolio() {
   }
   function sphereLoop() {
     sphereFrame = 0;
+    if (disposed) return;
     if (!dragging) { rotY += velY; rotX += velX; velX *= .96; velY = lerp(velY, .004, .02); }
     renderSphere();
     if (sphereVisible && !state.paused) sphereFrame = requestAnimationFrame(sphereLoop);
   }
   const kickSphere = () => { if (!sphereFrame && sphereVisible && !state.paused) sphereFrame = requestAnimationFrame(sphereLoop); };
-  new IntersectionObserver(es => { sphereVisible = es[0].isIntersecting; kickSphere(); }).observe(sphereWrap);
+  watch(new IntersectionObserver(es => { sphereVisible = es[0].isIntersecting; kickSphere(); })).observe(sphereWrap);
   sphereWrap.addEventListener('pointerdown', e => { dragging = true; lastP = { x: e.clientX, y: e.clientY }; sphereWrap.setPointerCapture(e.pointerId); });
   sphereWrap.addEventListener('pointermove', e => { if (!dragging) return; const dx = e.clientX - lastP.x, dy = e.clientY - lastP.y; rotY += dx * .008; rotX += dy * .008; velY = dx * .002; velX = dy * .002; lastP = { x: e.clientX, y: e.clientY }; renderSphere(); });
   const endDrag = () => { dragging = false; };
   sphereWrap.addEventListener('pointerup', endDrag); sphereWrap.addEventListener('pointercancel', endDrag);
   renderSphere(); loops.add(p => { if (!p) kickSphere(); });
+  disposers.push(() => cancelAnimationFrame(sphereFrame));
 
   /* ── Training log chart ─────────────────────────────────────── */
-  const epochs = [
-    { t: 2016.1, loss: 2.30, val: 2.42, date: 'FEB 2016', title: 'B.Sc. begins · IT Intern — PTV', body: 'Started Computer Science at Usman Institute of Technology while interning in the IT department of Pakistan Television Corporation.', tags: ['Foundations', 'IT'] },
-    { t: 2018.7, loss: 1.72, val: 1.95, date: 'SEP 2018', title: 'Web Developer Intern — Pakistan Civil Aviation Authority', body: 'ASP.NET development inside the IT department — first production codebase and first real users.', tags: ['ASP.NET', 'Web'] },
-    { t: 2020.1, loss: 1.28, val: 1.52, date: 'FEB 2020', title: 'AI Intern — Digital Landscape', body: 'Built a complete facial-recognition system at a software house — the project that turned an interest in vision into a direction.', tags: ['Face recognition', 'Python'] },
-    { t: 2020.55, loss: 1.05, val: 1.30, date: 'JUL 2020', title: 'B.Sc. graduation · 4th in department', body: 'Graduated 4th in the Computer Science department. Final-year project: automatic image colorization with CNNs. Also became a GitHub Arctic Code Vault contributor.', tags: ['Top 4', 'Colorization', 'Arctic Vault'] },
-    { t: 2020.9, loss: .84, val: 1.05, date: 'NOV 2020', title: 'Machine Learning Engineer — Aletheia AI', body: 'Joined as a deployment intern (after a front-end internship at Interns Pakistan) and was promoted within months to a full-time product-development role on the facial-recognition pipeline.', tags: ['Production ML', 'FaceNet · ArcFace', 'OpenVINO'] },
-    { t: 2021.1, loss: .78, val: .92, date: 'DEC 2020 — FEB 2021', title: 'Career Prep Fellow — Amal Academy', body: 'Selected from 4,500+ applicants for a Stanford-funded, 150-hour fellowship in communication, leadership and problem-solving.', tags: ['Leadership', 'Communication'] },
-    { t: 2021.6, loss: .66, val: .78, date: '2021', title: 'Paper published — KIET Journal', body: '“An efficient Convolutional Neural Network based Image Colorization Technique” published in the KIET Journal of Computing & Information Sciences (HEC-recognised).', tags: ['Publication', 'CNN'] },
-    { t: 2022.3, loss: .56, val: .66, date: 'APR 2022', title: 'M.Sc. Computer Science — RPTU Kaiserslautern', body: 'Moved to Germany to study at RPTU Rheinland-Pfälzische Technische Universität, focusing on machine learning and computer vision.', tags: ['Germany', 'Graduate study'] },
-    { t: 2022.8, loss: .42, val: .50, date: 'OCT 2022 — SEP 2023', title: 'Research Assistant — DFKI', body: 'German Research Center for AI. Machine-learning pipelines, semantic datatype checking and dataset generation; built predictive models on large datasets.', tags: ['ML pipelines', 'Research', 'Large datasets'] },
-    { t: 2025.6, loss: .27, val: .33, date: '2025 — 2026', title: 'M.Sc. thesis — 3D human mesh recovery', body: 'Estimating 3D human pose and body shape from images: adapting large datasets to a new parametric body model and training multi-person recovery networks in PyTorch.', tags: ['3D vision', 'PyTorch', 'Datasets'] },
+  const EPOCH_POINTS = [
+    { t: 2016.1, loss: 2.30, val: 2.42 },
+    { t: 2018.7, loss: 1.72, val: 1.95 },
+    { t: 2020.1, loss: 1.28, val: 1.52 },
+    { t: 2020.55, loss: 1.05, val: 1.30 },
+    { t: 2020.9, loss: .84, val: 1.05 },
+    { t: 2021.1, loss: .78, val: .92 },
+    { t: 2021.6, loss: .66, val: .78 },
+    { t: 2022.3, loss: .56, val: .66 },
+    { t: 2022.8, loss: .42, val: .50 },
+    { t: 2025.6, loss: .27, val: .33 },
   ];
+  const epochs = EPOCH_POINTS.map((p, i) => ({ ...p, ...strings.epochs[i] }));
   const X = t => (t - 2016) / 10 * 1000, Y = v => 340 - (v / 2.6) * 300;
   const smooth = (pts) => pts.map((p, i, a) => { if (!i) return `M${p[0]} ${p[1]}`; const q = a[i - 1], c = (p[0] - q[0]) * .5; return `C${q[0] + c} ${q[1]} ${p[0] - c} ${p[1]} ${p[0]} ${p[1]}`; }).join(' ');
   const linePts = [[0, Y(2.5)], ...epochs.map(e => [X(e.t), Y(e.loss)]), [1000, Y(.22)]];
@@ -461,7 +486,7 @@ export function initPortfolio() {
   }
   epochs.forEach((e, i) => {
     const b = document.createElement('button'); b.type = 'button'; b.className = 'pt'; b.style.left = `${X(e.t) / 10}%`; b.style.top = `${Y(e.loss) / 360 * 100}%`; b.style.setProperty('--i', i);
-    b.setAttribute('aria-label', `Epoch ${i + 1}: ${e.title}`); b.dataset.label = `epoch ${i + 1}`;
+    b.setAttribute('aria-label', `${strings.epochAria(i + 1)}: ${e.title}`); b.dataset.label = `epoch ${i + 1}`;
     const s = document.createElement('span'); s.textContent = `e${i + 1}`; if (i % 2) s.style.top = '18px'; b.appendChild(s);
     b.addEventListener('pointerenter', () => showEpoch(i)); b.addEventListener('focus', () => showEpoch(i)); b.addEventListener('click', () => showEpoch(i));
     pointsWrap.appendChild(b);
@@ -470,10 +495,10 @@ export function initPortfolio() {
   showEpoch(epochs.length - 1);
   // auto-walk the epochs once when the chart comes into view
   let walked = false;
-  new IntersectionObserver(es => {
+  watch(new IntersectionObserver(es => {
     if (!es[0].isIntersecting || walked || state.paused) return; walked = true;
-    let k = 0; const step = () => { if (k < epochs.length && !pointsWrap.matches(':hover')) showEpoch(k); if (++k < epochs.length) setTimeout(step, 700); }; setTimeout(step, 900);
-  }, { threshold: .4 }).observe($('#train-chart'));
+    let k = 0; const step = () => { if (disposed) return; if (k < epochs.length && !pointsWrap.matches(':hover')) showEpoch(k); if (++k < epochs.length) setTimeout(step, 700); }; setTimeout(step, 900);
+  }, { threshold: .4 })).observe($('#train-chart'));
 
   /* ── Résumé viewer ──────────────────────────────────────────── */
   const dlg = $('#resume-dialog'), frame = $('#resume-frame');
@@ -490,7 +515,7 @@ export function initPortfolio() {
   const openPalette = () => { if (palette.open) return; search.value = ''; filterPalette(); palette.showModal(); search.focus(); };
   const closePalette = () => palette.close();
   function filterPalette() {
-    const norm = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const norm = t => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
     const q = norm(search.value.trim());
     let first = -1;
     items.forEach((li, i) => { const hit = !q || norm(li.textContent + ' ' + (li.dataset.keywords || '')).includes(q); li.hidden = !hit; if (hit && first < 0) first = i; });
@@ -499,6 +524,8 @@ export function initPortfolio() {
   function runItem(li) {
     const act = li.dataset.action; closePalette();
     if (act === 'toggle-motion') { motionBtn.click(); return; }
+    if (act === 'toggle-theme') { $('#theme-toggle')?.click(); return; }
+    if (act === 'toggle-lang') { $('#lang-toggle')?.click(); return; }
     if ('new' in li.dataset) { open(act, '_blank', 'noopener'); return; }
     if (act.startsWith('#')) { $(act)?.scrollIntoView({ behavior: state.paused ? 'auto' : 'smooth' }); return; }
     location.href = act;
@@ -507,7 +534,7 @@ export function initPortfolio() {
   search.addEventListener('input', filterPalette);
   items.forEach(li => li.addEventListener('click', () => runItem(li)));
   palette.addEventListener('click', e => { if (e.target === palette) closePalette(); });
-  addEventListener('keydown', e => {
+  on(window, 'keydown', e => {
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); palette.open ? closePalette() : openPalette(); return; }
     if (!palette.open) return;
     const vis = items.filter(li => !li.hidden);
@@ -518,46 +545,45 @@ export function initPortfolio() {
 
   /* ── Terminal ───────────────────────────────────────────────── */
   const term = $('#terminal-out');
-  const termLines = [
-    ['<span class="k">$</span> whoami', 'Muhammad Saad Najib'],
-    ['<span class="k">$</span> cat role.txt', 'ML / Computer Vision Engineer · M.Sc. CS @ RPTU'],
-    ['<span class="k">$</span> contact --email', '<b>saadnajib97@hotmail.com</b>'],
-    ['<span class="k">$</span> contact --phone', '<b>+49 152 3764 1530</b>'],
-    ['<span class="k">$</span> contact --social', 'github.com/saadnajib · in/muhammad-saad-najib · ig: @saad__najib · fb: Muhammad Saad Najib'],
-    ['<span class="k">$</span> cat publications.txt', 'KJCIS 2021 · CNN image colorization → kjcis.kiet.edu.pk'],
-    ['<span class="k">$</span> status', '<b>open</b> to ML/CV roles · Kaiserslautern, DE'],
-  ];
+  const termLines = strings.termLines;
   let termStarted = false;
   function typeTerminal() {
     if (termStarted) return; termStarted = true;
     if (state.paused) { term.innerHTML = termLines.map(([c, o]) => `${c}\n${o}`).join('\n'); return; }
     let li = 0, ci = 0, html_ = '';
     const step = () => {
-      if (li >= termLines.length) return;
+      if (disposed || li >= termLines.length) return;
       const [cmd, out] = termLines[li]; const plain = cmd.replace(/<[^>]+>/g, '');
       if (ci <= plain.length) { term.innerHTML = html_ + '<span class="k">$</span>' + plain.slice(1, ci); ci++; setTimeout(step, 35); }
       else { html_ += `${cmd}\n${out}\n`; term.innerHTML = html_; li++; ci = 0; setTimeout(step, 260); }
     };
     step();
   }
-  new IntersectionObserver(es => { if (es[0].isIntersecting) typeTerminal(); }, { threshold: .3 }).observe(term);
+  watch(new IntersectionObserver(es => { if (es[0].isIntersecting) typeTerminal(); }, { threshold: .3 })).observe(term);
 
   /* ── Copy buttons ───────────────────────────────────────────── */
-  $$('.copy').forEach(b => b.addEventListener('click', async () => {
-    try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = 'copied'; b.classList.add('ok'); setTimeout(() => { b.textContent = 'copy'; b.classList.remove('ok'); }, 1600); }
-    catch { b.textContent = 'select'; }
+  $$('.copy[data-copy]').forEach(b => b.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = strings.copy.done; b.classList.add('ok'); setTimeout(() => { if (disposed) return; b.textContent = strings.copy.idle; b.classList.remove('ok'); }, 1600); }
+    catch { b.textContent = strings.copy.fail; }
   }));
 
   /* ── Mobile menu ────────────────────────────────────────────── */
   const menuBtn = $('#menu-toggle'), nav = $('#navigation');
-  const closeMenu = () => { menuBtn.setAttribute('aria-expanded', 'false'); menuBtn.setAttribute('aria-label', 'Open navigation'); nav.classList.remove('open'); };
-  menuBtn.addEventListener('click', () => { const o = menuBtn.getAttribute('aria-expanded') !== 'true'; menuBtn.setAttribute('aria-expanded', String(o)); menuBtn.setAttribute('aria-label', o ? 'Close navigation' : 'Open navigation'); nav.classList.toggle('open', o); });
+  const closeMenu = () => { menuBtn.setAttribute('aria-expanded', 'false'); menuBtn.setAttribute('aria-label', strings.aria.openNav); nav.classList.remove('open'); };
+  menuBtn.addEventListener('click', () => { const o = menuBtn.getAttribute('aria-expanded') !== 'true'; menuBtn.setAttribute('aria-expanded', String(o)); menuBtn.setAttribute('aria-label', o ? strings.aria.closeNav : strings.aria.openNav); nav.classList.toggle('open', o); });
   nav.addEventListener('click', e => { if (e.target.closest('a')) closeMenu(); });
-  addEventListener('keydown', e => { if (e.key === 'Escape' && nav.classList.contains('open')) { closeMenu(); menuBtn.focus(); } });
-  document.addEventListener('click', e => { if (!e.target.closest('.site-header')) closeMenu(); });
-  matchMedia('(min-width:901px)').addEventListener('change', closeMenu);
+  on(window, 'keydown', e => { if (e.key === 'Escape' && nav.classList.contains('open')) { closeMenu(); menuBtn.focus(); } });
+  on(document, 'click', e => { if (!e.target.closest('.site-header')) closeMenu(); });
+  on(matchMedia('(min-width:901px)'), 'change', closeMenu);
 
   /* ── Go ─────────────────────────────────────────────────────── */
   syncMotion(false);
   runBoot();
+
+  activeCleanup = () => {
+    disposed = true;
+    disposers.forEach(fn => { try { fn(); } catch (e) {} });
+    document.body.classList.remove('locked');
+  };
+  return () => { if (activeCleanup) { activeCleanup(); activeCleanup = null; } };
 }

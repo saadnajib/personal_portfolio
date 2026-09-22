@@ -531,3 +531,54 @@ html.motion-paused .cursor { display: none !important; }
   html:not(.motion-user) *, html:not(.motion-user) *::before, html:not(.motion-user) *::after { animation-duration: .001s !important; animation-iteration-count: 1 !important; transition-duration: .001s !important; }
 }
 @media print { .boot, .field, .noise, .cursor, .rail, .site-header, .ticker, .scroll-cue, .orbit { display: none !important; } body { background: #fff; color: #000; } }
+/* ── Header toggles: language + theme ─────────────────────────── */
+.lang-toggle, .theme-toggle { display: inline-flex; align-items: center; gap: 3px; height: 34px; padding: 0 10px; border: 1px solid var(--line); border-radius: 999px; font-family: var(--font-mono); font-size: 11px; color: var(--ink-2); transition: .3s; }
+.lang-toggle:hover, .theme-toggle:hover { border-color: var(--aqua); color: var(--aqua); }
+.lang-toggle b { font-weight: 400; color: var(--ink-3); }
+.lang-toggle b.on { font-weight: 700; color: var(--aqua); }
+.lang-toggle span { color: var(--line-2); }
+.theme-toggle { width: 34px; padding: 0; justify-content: center; }
+.theme-toggle .ico-moon { display: none; }
+html[data-theme="light"] .theme-toggle .ico-moon { display: block; }
+html[data-theme="light"] .theme-toggle .ico-sun { display: none; }
+@media (max-width: 420px) { .lang-toggle { padding: 0 7px; } .theme-toggle { display: none; } }
+
+/* ── Light theme ──────────────────────────────────────────────── */
+html[data-theme="light"] {
+  --bg: #f2f5f9;
+  --bg-2: #e7ecf3;
+  --bg-3: #dbe2ec;
+  --ink: #0e1420;
+  --ink-2: #3d4756;
+  --ink-3: #66707e;
+  --line: rgba(12, 24, 44, .12);
+  --line-2: rgba(12, 24, 44, .22);
+  --aqua: #0b8f80;
+  --coral: #d92955;
+  --violet: #6247e0;
+  --amber: #b26a00;
+}
+html[data-theme="light"] .main-nav a:hover, html[data-theme="light"] .main-nav a.active { background: rgba(12, 24, 44, .06); }
+html[data-theme="light"] .card { background: linear-gradient(160deg, rgba(255, 255, 255, .9), rgba(255, 255, 255, .55)); }
+html[data-theme="light"] .term-bar { background: rgba(255, 255, 255, .04); }
+html[data-theme="light"] .palette { background: rgba(248, 250, 253, .97); box-shadow: 0 40px 120px -30px rgba(15, 25, 45, .35); }
+html[data-theme="light"] .noise { opacity: .028; }
+/* The generated art, training chart, terminal and skill chips are drawn
+   for a dark canvas — keep those panels dark and restore the dark-theme
+   tokens inside them so their text stays readable. */
+html[data-theme="light"] .card-art,
+html[data-theme="light"] .train-chart,
+html[data-theme="light"] .terminal,
+html[data-theme="light"] .boot {
+  --bg: #05070b; --bg-2: #0a0e16; --bg-3: #10161f;
+  --ink: #eef3f8; --ink-2: #a9b4c2; --ink-3: #8791a0;
+  --line: rgba(255, 255, 255, .08); --line-2: rgba(255, 255, 255, .14);
+  --aqua: #5ef2e0; --coral: #ff5c7a; --violet: #7c5cff; --amber: #ffb454;
+}
+html[data-theme="light"] .card-art { background: #10161f; }
+html[data-theme="light"] .train-chart { background: #0a0e16; }
+html[data-theme="light"] .boot { background: #05070b; }
+html[data-theme="light"] .sphere span { background: rgba(255, 255, 255, .85); }
+@media (max-width: 900px) {
+  html[data-theme="light"] .main-nav { background: rgba(245, 248, 252, .95); }
+}

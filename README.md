@@ -3,7 +3,10 @@
 A self-inferring portfolio: the site treats itself like a computer-vision pipeline.
 Sections are "layers" (Input → Features → Embedding → Training log → Checkpoint → Output).
 
-Built with **React 18 + Vite**.
+Built with **React 18 + Vite**. Ships an EN/DE language toggle and a dark/light
+theme toggle (header buttons, also in the ⌘K palette); both persist in
+`localStorage`. All copy lives in `src/i18n.jsx` — edit both `en` and `de`
+when changing text.
 
 ## Getting started
 
